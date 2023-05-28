@@ -1,0 +1,10 @@
+[package]
+name = "navigation_game"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+iter_tools = "0.1.4"
+vek = { version = "0.10.0", default-features = false, features = ["libm"] }
