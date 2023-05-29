@@ -1,4 +1,7 @@
+mod command;
 mod map;
+mod phrase;
+mod state;
 
 use map::grid::from_csvs;
 
