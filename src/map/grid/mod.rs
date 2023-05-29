@@ -1,4 +1,8 @@
-mod examples;
+mod builder;
+mod read;
+
+pub use builder::{Builder, BuilderError};
+pub use read::{from_csvs, ReadError};
 
 use iter_tools::Itertools;
 use vek::Vec2;
@@ -27,11 +31,11 @@ pub struct Road {
     /// Origin of the road.
     origin: Vec2<usize>,
 
-    /// Length of the road.
-    length: usize,
-
     /// Orientation of the road.
     orientation: Orientation,
+
+    /// Length of the road.
+    length: usize,
 
     /// Name of the road.
     name: Option<String>,
@@ -43,36 +47,20 @@ pub struct Road {
 }
 
 impl Road {
-    /// Returns a new named road.
+    /// Returns a new road.
     pub fn new(
         origin: Vec2<usize>,
         length: usize,
         orientation: Orientation,
         rank: u8,
-        name: String,
+        name: Option<String>,
     ) -> Self {
         Self {
             origin,
             length,
             orientation,
             rank,
-            name: Some(name),
-        }
-    }
-
-    /// Returns a new unnamed road.
-    pub fn new_unnamed(
-        origin: Vec2<usize>,
-        length: usize,
-        orientation: Orientation,
-        rank: u8,
-    ) -> Self {
-        Self {
-            origin,
-            length,
-            orientation,
-            rank,
-            name: None,
+            name,
         }
     }
 
@@ -91,30 +79,32 @@ impl Road {
             return false;
         }
 
-        let (self_cross_pos, self_min, self_max, other_cross_pos, other_min, other_max) =
-            match self.orientation {
-                Orientation::NorthSouth => (
-                    self.origin.x,
-                    self.origin.y,
-                    self.terminus().y,
-                    other.origin.x,
-                    other.origin.y,
-                    other.terminus().y,
-                ),
-                Orientation::EastWest => (
-                    self.origin.y,
-                    self.origin.x,
-                    self.terminus().x,
-                    other.origin.x,
-                    other.origin.y,
-                    other.terminus().y,
-                ),
-            };
-
-        // Roads are colinear...
-        self_cross_pos == other_cross_pos
-            // ...and they overlap.
-            && is_overlap(self_min, self_max, other_min, other_max)
+        match self.orientation {
+            Orientation::NorthSouth => {
+                if self.origin.x != other.origin.x {
+                    false
+                } else {
+                    is_overlap(
+                        self.origin.y,
+                        self.terminus().y,
+                        other.origin.y,
+                        other.terminus().y,
+                    )
+                }
+            }
+            Orientation::EastWest => {
+                if self.origin.y != other.origin.y {
+                    false
+                } else {
+                    is_overlap(
+                        self.origin.x,
+                        self.terminus().x,
+                        other.origin.x,
+                        other.terminus().x,
+                    )
+                }
+            }
+        }
     }
 
     /// Returns `true` if the road and the building overlap.
@@ -156,22 +146,9 @@ pub struct Building {
 }
 
 impl Building {
-    /// Returns a new named building.
-    pub fn new(origin: Vec2<usize>, dim: Vec2<usize>, name: String) -> Self {
-        Self {
-            origin,
-            dim,
-            name: Some(name),
-        }
-    }
-
-    /// Returns a new unnamed building.
-    pub fn new_unnamed(origin: Vec2<usize>, dim: Vec2<usize>) -> Self {
-        Self {
-            origin,
-            dim,
-            name: None,
-        }
+    /// Returns a new building.
+    pub fn new(origin: Vec2<usize>, dim: Vec2<usize>, name: Option<String>) -> Self {
+        Self { origin, dim, name }
     }
 
     /// Returns the maximum coordinates of the building.
@@ -270,123 +247,6 @@ pub enum Orientation {
 
     /// Indicates that a road runs east to west.
     EastWest,
-}
-
-pub struct MapGridBuilder {
-    dim: Vec2<usize>,
-    roads: Vec<Road>,
-    buildings: Vec<Building>,
-}
-
-impl MapGridBuilder {
-    pub fn new(width: usize, height: usize) -> Self {
-        Self {
-            dim: Vec2::new(width, height),
-            roads: vec![],
-            buildings: vec![],
-        }
-    }
-
-    pub fn road(mut self, road: Road) -> Self {
-        self.roads.push(road);
-        self
-    }
-
-    pub fn building(mut self, building: Building) -> Self {
-        self.buildings.push(building);
-        self
-    }
-
-    pub fn build(self) -> Result<MapGrid, BuilderError> {
-        let mut grid = MapGrid {
-            dim: self.dim,
-            roads: vec![],
-            buildings: vec![],
-        };
-
-        for r in self.roads {
-            Self::try_append_road(&mut grid, r)?
-        }
-
-        for b in self.buildings {
-            Self::try_append_building(&mut grid, b)?
-        }
-
-        Ok(grid)
-    }
-
-    /// Tries to add the given road to the map.
-    ///
-    /// Returns an error if the road overlaps another road or if the road
-    /// intersects a building.
-    fn try_append_road(grid: &mut MapGrid, road: Road) -> Result<(), BuilderError> {
-        if road.terminus().x > grid.dim.x || road.terminus().y > grid.dim.y {
-            return Err(BuilderError::OutOfBoundsRoad(road));
-        }
-
-        for r in &grid.roads {
-            if road.overlaps_road(r) {
-                return Err(BuilderError::OverlappingRoads(r.clone(), road));
-            }
-        }
-
-        for b in &grid.buildings {
-            if road.overlaps_building(b) {
-                return Err(BuilderError::OverlappingRoadAndBuilding(road, b.clone()));
-            }
-        }
-
-        grid.roads.push(road);
-        Ok(())
-    }
-
-    /// Tries to add the given building to the map.
-    ///
-    /// Returns an error if the building intersects a road, if the building
-    /// intersects annother building, or if the building is not connected to any
-    /// road.
-    fn try_append_building(grid: &mut MapGrid, building: Building) -> Result<(), BuilderError> {
-        if building.max().x > grid.dim.x || building.max().y > grid.dim.y {
-            return Err(BuilderError::OutOfBoundsBuilding(building));
-        }
-
-        for r in &grid.roads {
-            if building.overlaps_road(r) {
-                return Err(BuilderError::OverlappingRoadAndBuilding(
-                    r.clone(),
-                    building,
-                ));
-            }
-        }
-
-        for b in &grid.buildings {
-            if building.overlaps_building(b) {
-                return Err(BuilderError::OverlappingBuilings(b.clone(), building));
-            }
-        }
-
-        let is_disconnected = grid
-            .roads
-            .iter()
-            .flat_map(|r| building.get_connections(r))
-            .collect_vec()
-            .is_empty();
-        if is_disconnected {
-            return Err(BuilderError::UnreachableBuilding(building));
-        }
-
-        grid.buildings.push(building);
-        Ok(())
-    }
-}
-
-pub enum BuilderError {
-    OverlappingRoads(Road, Road),
-    OverlappingBuilings(Building, Building),
-    OverlappingRoadAndBuilding(Road, Building),
-    OutOfBoundsRoad(Road),
-    OutOfBoundsBuilding(Building),
-    UnreachableBuilding(Building),
 }
 
 /// Returns `true` if there is overlap between two ranges.

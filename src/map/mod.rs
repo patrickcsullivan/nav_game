@@ -1,2 +1,2 @@
 mod graph;
-mod grid;
+pub mod grid;
