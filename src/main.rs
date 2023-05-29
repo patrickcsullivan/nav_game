@@ -2,6 +2,7 @@ mod command;
 mod map;
 mod phrase;
 mod state;
+mod word;
 
 use map::grid::from_csvs;
 

@@ -1,9 +1,4 @@
-use std::collections::HashSet;
-
-use crate::{
-    map::grid::MapGrid,
-    phrase::{Phrase, Word},
-};
+use crate::{map::grid::MapGrid, phrase::Phrase, word::Word};
 
 /// The state of the game.
 pub struct State {

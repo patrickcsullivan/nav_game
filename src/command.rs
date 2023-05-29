@@ -1,7 +1,8 @@
 use iter_tools::Itertools;
 use thiserror::Error;
 
-use crate::phrase::{Phrase, Word};
+use crate::phrase::Phrase;
+use crate::word::Word;
 
 /// A navigation command. The command may or may not be executable depending on
 /// the map and the players location when the command is applied.
@@ -68,12 +69,12 @@ pub enum ParseError {
     NoWordsAfterVerb,
 }
 
-/// Distance to move forward.
+/// Command to move forward.
 pub enum ForwardCommand {
     Blocks(usize),
 }
 
-/// Direction to turn.
+/// Command to turn.
 pub enum TurnCommand {
     Right,
     Left,
