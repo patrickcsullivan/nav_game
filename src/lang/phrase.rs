@@ -1,4 +1,4 @@
-use crate::word::Word;
+use super::Word;
 use iter_tools::Itertools;
 
 /// A phrase that the player constructs to describe navigation instructions. The

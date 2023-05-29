@@ -1,8 +1,6 @@
+use crate::lang::{Phrase, Verb, Word};
 use iter_tools::Itertools;
 use thiserror::Error;
-
-use crate::phrase::Phrase;
-use crate::word::Word;
 
 /// A navigation command. The command may or may not be executable depending on
 /// the map and the players location when the command is applied.
@@ -14,56 +12,38 @@ pub enum Command {
 
 impl Command {
     pub fn parse(phrase: &Phrase) -> Result<Self, ParseError> {
-        let words = phrase.words().collect_vec();
-
-        let verb_indices = words.iter().positions(|w| w.is_verb()).collect_vec();
-        if verb_indices.is_empty() {
-            return Err(ParseError::NoVerb);
-        } else if verb_indices.len() > 1 {
-            return Err(ParseError::MultipleVerbs);
-        } else if verb_indices[0] != 0 {
-            return Err(ParseError::WordsBeforeVerb);
-        };
-
-        // The unwrap is ok because we checked that words is not empty.
-        let (verb, rest) = words.split_first().unwrap();
+        let words = phrase.words().map(|a| a.clone()).collect_vec();
+        let (verb, rest) = Self::split_verb(&words)?;
 
         match verb {
-            Word::Está => todo!(),
-            Word::Toma => todo!(),
-            Word::Gira => todo!(),
-            Word::Continúa => todo!(),
-            Word::En => todo!(),
-            Word::A => todo!(),
-            Word::De => todo!(),
-            Word::Al => todo!(),
-            Word::La => todo!(),
-            Word::El => todo!(),
-            Word::Primera => todo!(),
-            Word::Segunda => todo!(),
-            Word::Izquierda => todo!(),
-            Word::Derecha => todo!(),
-            Word::Final => todo!(),
-            Word::Todo => todo!(),
-            Word::Derecho => todo!(),
-            Word::Mano => todo!(),
+            Verb::Está => todo!(),
+            Verb::Toma => todo!(),
+            Verb::Gira => todo!(),
+            Verb::Continúa => todo!(),
         }
 
         todo!()
+    }
+
+    /// Splits the phrase into an inital verb and the words that follow.
+    ///
+    /// Returns an error if there is not exactly one verb and the phrase or if
+    /// the verb is not the first word in the phrase.
+    fn split_verb(words: &[Word]) -> Result<(&Verb, &[Word]), ParseError> {
+        let (first, rest) = words.split_first().ok_or(ParseError::NoWords)?;
+        let verb = first.verb().ok_or(ParseError::NonInitialVerb)?;
+        Ok((verb, rest))
     }
 }
 
 /// An error that can occur while parsing a `Phrase` into a `Command`.
 #[derive(Debug, Error)]
 pub enum ParseError {
-    #[error("The sentence must contain a verb.")]
-    NoVerb,
+    #[error("The sentence must contain words.")]
+    NoWords,
 
-    #[error("The sentence cannot contain multiple verbs.")]
-    MultipleVerbs,
-
-    #[error("The verb should should come first in this phrase.")]
-    WordsBeforeVerb,
+    #[error("The sentence must start with a verb.")]
+    NonInitialVerb,
 
     #[error("The verb must be followed by a prespositional phrase.")]
     NoWordsAfterVerb,

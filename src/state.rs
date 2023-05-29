@@ -1,4 +1,5 @@
-use crate::{map::grid::MapGrid, phrase::Phrase, word::Word};
+use crate::lang::{Phrase, Word};
+use crate::map::grid::MapGrid;
 
 /// The state of the game.
 pub struct State {
