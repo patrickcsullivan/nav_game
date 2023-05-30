@@ -1,7 +1,6 @@
 mod phrase;
-mod verb;
+mod sentence;
 mod word;
 
-pub use phrase::Phrase;
-pub use verb::Verb;
-pub use word::Word;
+pub use sentence::Sentence;
+pub use word::{Noun, Verb, Word};

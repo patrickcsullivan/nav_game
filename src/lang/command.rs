@@ -1,23 +1,28 @@
-use crate::lang::{Phrase, Verb, Word};
+use crate::lang::{Sentence, Verb, Word};
 use iter_tools::Itertools;
 use thiserror::Error;
 
 /// A navigation command. The command may or may not be executable depending on
 /// the map and the players location when the command is applied.
 pub enum Command {
+    /// Command to move forward some distance.
     Forward(ForwardCommand),
+
+    /// Command to turn.
     Turn(TurnCommand),
+
     AndThen(Box<Command>),
 }
 
 impl Command {
-    pub fn parse(phrase: &Phrase) -> Result<Self, ParseError> {
-        let words = phrase.words().map(|a| a.clone()).collect_vec();
+    /// Parse the sentence into a navigation command.
+    pub fn parse_sentence(sentence: &Sentence) -> Result<Self, ParseError> {
+        let words = sentence.words().copied().collect_vec();
         let (verb, rest) = Self::split_verb(&words)?;
 
         match verb {
             Verb::Está => todo!(),
-            Verb::Toma => todo!(),
+            Verb::Toma => },
             Verb::Gira => todo!(),
             Verb::Continúa => todo!(),
         }
@@ -33,6 +38,23 @@ impl Command {
         let (first, rest) = words.split_first().ok_or(ParseError::NoWords)?;
         let verb = first.verb().ok_or(ParseError::NonInitialVerb)?;
         Ok((verb, rest))
+    }
+
+    /// Parse the prepositional phrase into a navigation command.
+    fn parse_prepositional_phrase(words: &[Word]) -> Result<Command, ParseError> {
+        todo!()
+    }
+
+
+
+    /// Parse the prepositional phrase into a turn command.
+    fn parse_take_prepositional_phrase(words: &[Word]) -> Result<Command, ParseError> {
+        todo!()
+    }
+
+    /// Parse the prepositional phrase into a move forward command.
+    fn parse_turn_prepositional_phrase(words: &[Word]) -> Result<ForwardCommand, ParseError> {
+        todo!()
     }
 }
 

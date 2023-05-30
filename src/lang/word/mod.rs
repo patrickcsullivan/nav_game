@@ -1,9 +1,17 @@
-use super::Verb;
+mod adjective;
+mod noun;
+mod verb;
+
+pub use adjective::Adjective;
+pub use noun::Noun;
+pub use verb::Verb;
 
 /// A word that can be used to build a phrase.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Word {
     Verb(Verb),
+    Noun(Noun),
+    Adjective(Adjective),
     Other(Other),
 }
 
@@ -28,6 +36,8 @@ impl ToString for Word {
         match self {
             Word::Verb(v) => v.to_string(),
             Word::Other(o) => o.to_string(),
+            Word::Noun(n) => n.to_string(),
+            Word::Adjective(a) => a.to_string(),
         }
     }
 }
@@ -51,12 +61,6 @@ pub enum Other {
 
     /// "the" (masculine)
     El,
-
-    /// "first"
-    Primera,
-
-    /// "second"
-    Segunda,
 
     /// "left"
     Izquierda,
@@ -87,8 +91,6 @@ impl ToString for Other {
             Other::Al => "al",
             Other::La => "la",
             Other::El => "el",
-            Other::Primera => "primera",
-            Other::Segunda => "segunda",
             Other::Izquierda => "izquierda",
             Other::Derecha => "derecha",
             Other::Final => "final",

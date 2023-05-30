@@ -1,4 +1,4 @@
-use crate::lang::{Phrase, Word};
+use crate::lang::{Sentence, Word};
 use crate::map::grid::MapGrid;
 
 /// The state of the game.
@@ -6,9 +6,9 @@ pub struct State {
     map_grid: MapGrid,
 
     /// The work-in-progroess phrase that the player is currently building.
-    wip_phrase: Phrase,
+    wip_phrase: Sentence,
 
-    completed_phrases: Vec<Phrase>,
+    completed_phrases: Vec<Sentence>,
 
     /// A bank of words that the player can select from to build phrases.∑
     word_bank: Vec<Word>,

@@ -1,4 +1,3 @@
-mod command;
 mod lang;
 mod map;
 mod state;

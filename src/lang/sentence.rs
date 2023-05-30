@@ -1,35 +1,35 @@
 use super::Word;
 use iter_tools::Itertools;
 
-/// A phrase that the player constructs to describe navigation instructions. The
-/// phrase may or may not be parsable into an actual navigation command.
+/// A sentence that the player constructs to describe navigation instructions.
+/// The sentence may or may not be parsable into an actual navigation command.
 #[derive(Debug)]
-pub struct Phrase(Vec<Word>);
+pub struct Sentence(Vec<Word>);
 
-impl Phrase {
-    /// Returns an empty phrase.
+impl Sentence {
+    /// Returns an empty sentence.
     pub fn empty() -> Self {
         Self(vec![])
     }
 
-    /// Push the given word onto the end of the phrase.
+    /// Push the given word onto the end of the sentence.
     pub fn push(&mut self, word: Word) {
         self.0.push(word)
     }
 
-    /// Removes the last word from the phrase and return it, or returns `None`
-    /// if the phrase is empty.
+    /// Removes the last word from the sentence and return it, or returns `None`
+    /// if the sentence is empty.
     pub fn pop(&mut self) -> Option<Word> {
         self.0.pop()
     }
 
-    /// Returns an iterator over the words in the phrase.
+    /// Returns an iterator over the words in the sentence.
     pub fn words<'a>(&'a self) -> impl Iterator<Item = &'a Word> {
         self.0.iter()
     }
 }
 
-impl ToString for Phrase {
+impl ToString for Sentence {
     fn to_string(&self) -> String {
         self.0
             .iter()
