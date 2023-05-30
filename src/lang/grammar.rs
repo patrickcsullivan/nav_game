@@ -1,6 +1,8 @@
-use thiserror::Error;
+//! This module defines the grammar of the language used in the game to describe
+//! directions.
 
-use crate::lang::Word;
+use crate::lang::Lexeme;
+use thiserror::Error;
 
 /// A sentence which is either a delcaration of where something is or a command
 /// instructing how to navigate to a destination.
@@ -99,21 +101,31 @@ pub enum Number {
 
 /// The ordering of an item in a sequence.
 pub enum Ordinality {
+    Primera,
     Primero,
+    Segunda,
     Segundo,
+    Tercera,
     Tercero,
+    Cuarta,
     Cuarto,
 }
 
-impl TryFrom<&[Word]> for Ordinality {
+impl TryFrom<&[Lexeme]> for Ordinality {
     type Error = ParseOrdinalityError;
 
-    fn try_from(words: &[Word]) -> Result<Self, Self::Error> {
+    fn try_from(words: &[Lexeme]) -> Result<Self, Self::Error> {
         let word = single(words).ok_or(ParseOrdinalityError())?;
         match word {
-            Word::Verb(_) => todo!(),
-            Word::Noun(_) => todo!(),
-            Word::Other(_) => todo!(),
+            Lexeme::Primera => Ok(Ordinality::Primera),
+            Lexeme::Primero => Ok(Ordinality::Primero),
+            Lexeme::Segunda => Ok(Ordinality::Segunda),
+            Lexeme::Segundo => Ok(Ordinality::Segundo),
+            Lexeme::Tercera => Ok(Ordinality::Tercera),
+            Lexeme::Tercero => Ok(Ordinality::Tercero),
+            Lexeme::Cuarta => Ok(Ordinality::Cuarta),
+            Lexeme::Cuarto => Ok(Ordinality::Cuarto),
+            _ => Err(ParseOrdinalityError()),
         }
     }
 }
@@ -122,10 +134,10 @@ impl TryFrom<&[Word]> for Ordinality {
 #[error("The words(s) must be an ordinality.")]
 pub struct ParseOrdinalityError();
 
-fn single(words: &[Word]) -> Option<&Word> {
-    if words.len() > 1 {
+fn single(lexemes: &[Lexeme]) -> Option<&Lexeme> {
+    if lexemes.len() > 1 {
         None
     } else {
-        words.first()
+        lexemes.first()
     }
 }

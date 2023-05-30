@@ -1,5 +1,4 @@
 mod noun_phrase;
-mod sentence;
 
 /// A prepositional phrase describing a direction.
 // to the left

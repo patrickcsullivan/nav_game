@@ -1,10 +1,10 @@
-use super::Word;
+use super::Lexeme;
 use iter_tools::Itertools;
 
 /// A sentence that the player constructs to describe navigation instructions.
 /// The sentence may or may not be parsable into an actual navigation command.
 #[derive(Debug)]
-pub struct Sentence(Vec<Word>);
+pub struct Sentence(Vec<Lexeme>);
 
 impl Sentence {
     /// Returns an empty sentence.
@@ -13,18 +13,18 @@ impl Sentence {
     }
 
     /// Push the given word onto the end of the sentence.
-    pub fn push(&mut self, word: Word) {
+    pub fn push(&mut self, word: Lexeme) {
         self.0.push(word)
     }
 
     /// Removes the last word from the sentence and return it, or returns `None`
     /// if the sentence is empty.
-    pub fn pop(&mut self) -> Option<Word> {
+    pub fn pop(&mut self) -> Option<Lexeme> {
         self.0.pop()
     }
 
     /// Returns an iterator over the words in the sentence.
-    pub fn words<'a>(&'a self) -> impl Iterator<Item = &'a Word> {
+    pub fn words<'a>(&'a self) -> impl Iterator<Item = &'a Lexeme> {
         self.0.iter()
     }
 }

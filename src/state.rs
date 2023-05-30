@@ -1,4 +1,4 @@
-use crate::lang::{Sentence, Word};
+use crate::lang::{Lexeme, Sentence};
 use crate::map::grid::MapGrid;
 
 /// The state of the game.
@@ -11,7 +11,7 @@ pub struct State {
     completed_phrases: Vec<Sentence>,
 
     /// A bank of words that the player can select from to build phrases.∑
-    word_bank: Vec<Word>,
+    word_bank: Vec<Lexeme>,
 }
 
 impl State {
