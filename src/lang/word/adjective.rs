@@ -1,12 +1,14 @@
+use std::fmt::Display;
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Adjective {
     Ordinality(Ordinality),
 }
 
-impl ToString for Adjective {
-    fn to_string(&self) -> String {
+impl Display for Adjective {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Adjective::Ordinality(o) => o.to_string(),
+            Adjective::Ordinality(o) => write!(f, "{o}"),
         }
     }
 }
@@ -20,12 +22,12 @@ pub enum Ordinality {
     Segunda,
 }
 
-impl ToString for Ordinality {
-    fn to_string(&self) -> String {
-        match self {
+impl Display for Ordinality {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let s = match self {
             Ordinality::Primera => "primera",
             Ordinality::Segunda => "segunda",
-        }
-        .to_string()
+        };
+        write!(f, "{s}")
     }
 }
