@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use super::{Building, CoordBuildingAdjacency, MapGrid};
 use iter_tools::Itertools;
 use vek::Vec2;
@@ -91,7 +93,7 @@ impl RoadCoordNode {
 #[derive(Debug, Clone)]
 pub struct MapGraph {
     building_nodes: Vec<BuildingNode>,
-    road_coord_nodes: Vec<RoadCoordNode>,
+    road_coord_nodes: HashMap<Vec2<usize>, RoadCoordNode>,
 }
 
 impl MapGraph {
@@ -100,12 +102,12 @@ impl MapGraph {
     pub fn new(grid: &MapGrid) -> Self {
         let mut graph = Self {
             building_nodes: vec![],
-            road_coord_nodes: vec![],
+            road_coord_nodes: HashMap::new(),
         };
 
         let building_nodes = grid
             .buildings()
-            .into_iter()
+            .iter()
             .map(|b| BuildingNode::new(b.clone()))
             .collect_vec();
 
@@ -118,7 +120,8 @@ impl MapGraph {
             }
         }
 
-        todo!()
+        graph.building_nodes = building_nodes;
+        graph
     }
 
     /// Returns the building node with the given ID.
@@ -130,25 +133,16 @@ impl MapGraph {
 
     /// Returns the road coordinate node with the given coordinates.
     pub fn get_road_cooord(&self, coord: Vec2<usize>) -> Option<&RoadCoordNode> {
-        self.road_coord_nodes
-            .iter()
-            .find(|node| node.coord == coord)
+        self.road_coord_nodes.get(&coord)
     }
 
     /// Gets the road coordinate node with the given coordinates or creates and
     /// adds a new node with the coordinates to the graph if one does not exist
     /// yet.
-    fn get_or_create_road_coord(&mut self, coord: Vec2<usize>) -> &RoadCoordNode {
-        if let Some(node) = self.get_road_cooord(coord) {
-            return node;
-        }
-
-        let node = RoadCoordNode::new(coord);
-        self.road_coord_nodes.push(node);
-
-        // We can safely unwrap because there is guaranteed to be at least
-        // one element since we just pushed the new node.
-        self.road_coord_nodes.last().unwrap()
+    fn get_or_create_road_coord(&mut self, coord: Vec2<usize>) -> &mut RoadCoordNode {
+        self.road_coord_nodes
+            .entry(coord)
+            .or_insert_with(|| RoadCoordNode::new(coord))
     }
 }
 
