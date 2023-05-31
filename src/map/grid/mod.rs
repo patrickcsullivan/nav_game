@@ -25,6 +25,18 @@ pub struct MapGrid {
     buildings: Vec<Building>,
 }
 
+impl MapGrid {
+    /// Returns the buildings in the map.
+    pub fn buildings(&self) -> &[Building] {
+        &self.buildings
+    }
+
+    /// Returns the roads in the map.
+    pub fn roads(&self) -> &[Road] {
+        &self.roads
+    }
+}
+
 /// A road along which players can travel in the game world.
 #[derive(Debug, Clone)]
 pub struct Road {
@@ -159,6 +171,11 @@ impl Building {
         }
     }
 
+    /// Returns the building ID.
+    pub fn id(&self) -> usize {
+        self.id
+    }
+
     /// Returns the maximum coordinates of the building.
     pub fn max(&self) -> Vec2<usize> {
         self.origin + self.dim
@@ -196,7 +213,11 @@ impl Building {
 
     /// Returns the coordinates where there is a connection between the road and
     /// the buiding.
-    pub fn get_connections(&self, road: &Road) -> Vec<Vec2<usize>> {
+    ///
+    /// Each returned coordinate is also associated with a
+    /// `CoordBuildingAdjacency` that describes the position of the building
+    /// relative to the coordinate.
+    pub fn get_connections(&self, road: &Road) -> Vec<(Vec2<usize>, CoordBuildingAdjacency)> {
         match road.orientation {
             RoadOrientation::NorthSouth => {
                 let x = if self.origin.x == road.origin.x {
@@ -208,14 +229,44 @@ impl Building {
                 };
 
                 if let Some(x) = x {
-                    intersection_incl(
+                    let is_building_east_of_road = x == self.origin.x;
+                    let (default_adjacency, southmost_adjacency, northmost_adjacency) =
+                        if is_building_east_of_road {
+                            (
+                                CoordBuildingAdjacency::NortheastSouthEast,
+                                CoordBuildingAdjacency::Northeast,
+                                CoordBuildingAdjacency::Southeast,
+                            )
+                        } else {
+                            (
+                                CoordBuildingAdjacency::SouthwestNorthwest,
+                                CoordBuildingAdjacency::Northwest,
+                                CoordBuildingAdjacency::Southwest,
+                            )
+                        };
+
+                    let coords = intersection_incl(
                         self.origin.y,
                         self.max().y,
                         road.origin.y,
                         road.terminus().y,
                     )
-                    .map(|y| Vec2::new(x, y))
-                    .collect_vec()
+                    .collect_vec();
+
+                    coords
+                        .iter()
+                        .enumerate()
+                        .map(|(i, &y)| {
+                            let adjacency = if i == 0 {
+                                southmost_adjacency
+                            } else if i == coords.len() - 1 {
+                                northmost_adjacency
+                            } else {
+                                default_adjacency
+                            };
+                            (Vec2::new(x, y), adjacency)
+                        })
+                        .collect_vec()
                 } else {
                     vec![]
                 }
@@ -230,14 +281,44 @@ impl Building {
                 };
 
                 if let Some(y) = y {
-                    intersection_incl(
+                    let is_building_north_of_road = y == self.origin.y;
+                    let (default_adjacency, westmost_adjacency, eastmost_adjacency) =
+                        if is_building_north_of_road {
+                            (
+                                CoordBuildingAdjacency::NorthwestNortheast,
+                                CoordBuildingAdjacency::Northeast,
+                                CoordBuildingAdjacency::Northwest,
+                            )
+                        } else {
+                            (
+                                CoordBuildingAdjacency::SoutheastSouthWest,
+                                CoordBuildingAdjacency::Southeast,
+                                CoordBuildingAdjacency::Southwest,
+                            )
+                        };
+
+                    let coords = intersection_incl(
                         self.origin.x,
                         self.max().x,
                         road.origin.x,
                         road.terminus().x,
                     )
-                    .map(|x| Vec2::new(x, y))
-                    .collect_vec()
+                    .collect_vec();
+
+                    coords
+                        .iter()
+                        .enumerate()
+                        .map(|(i, &x)| {
+                            let adjacency = if i == 0 {
+                                westmost_adjacency
+                            } else if i == coords.len() - 1 {
+                                eastmost_adjacency
+                            } else {
+                                default_adjacency
+                            };
+                            (Vec2::new(x, y), adjacency)
+                        })
+                        .collect_vec()
                 } else {
                     vec![]
                 }
@@ -255,6 +336,19 @@ pub enum RoadOrientation {
 
     /// Indicates that a road runs east to west.
     EastWest,
+}
+
+/// Represents the different types of adjacencies that a single building can
+/// have to a coordinate on a road.
+pub enum CoordBuildingAdjacency {
+    Northeast,
+    Southeast,
+    Southwest,
+    Northwest,
+    NorthwestNortheast,
+    NortheastSouthEast,
+    SoutheastSouthWest,
+    SouthwestNorthwest,
 }
 
 /// Returns `true` if there is overlap between two ranges.
