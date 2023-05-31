@@ -1,4 +1,4 @@
-use super::{Builder, BuilderError, Building, MapGrid, Orientation, Road};
+use super::{Builder, BuilderError, Building, MapGrid, Road, RoadOrientation};
 use csv::StringRecord;
 use std::io;
 use thiserror::Error;
@@ -74,10 +74,10 @@ fn parse_building(record: &StringRecord) -> Option<Building> {
     Some(building)
 }
 
-fn parse_orientation(s: &str) -> Option<Orientation> {
+fn parse_orientation(s: &str) -> Option<RoadOrientation> {
     match s {
-        "ns" => Some(Orientation::NorthSouth),
-        "ew" => Some(Orientation::EastWest),
+        "ns" => Some(RoadOrientation::NorthSouth),
+        "ew" => Some(RoadOrientation::EastWest),
         _ => None,
     }
 }

@@ -32,7 +32,7 @@ pub struct Road {
     origin: Vec2<usize>,
 
     /// Orientation of the road.
-    orientation: Orientation,
+    orientation: RoadOrientation,
 
     /// Length of the road.
     length: usize,
@@ -51,7 +51,7 @@ impl Road {
     pub fn new(
         origin: Vec2<usize>,
         length: usize,
-        orientation: Orientation,
+        orientation: RoadOrientation,
         rank: u8,
         name: Option<String>,
     ) -> Self {
@@ -67,8 +67,8 @@ impl Road {
     /// Returns the terminus of the road.
     pub fn terminus(&self) -> Vec2<usize> {
         let delta = match self.orientation {
-            Orientation::NorthSouth => Vec2::new(0, self.length),
-            Orientation::EastWest => Vec2::new(self.length, 0),
+            RoadOrientation::NorthSouth => Vec2::new(0, self.length),
+            RoadOrientation::EastWest => Vec2::new(self.length, 0),
         };
         self.origin + delta
     }
@@ -80,7 +80,7 @@ impl Road {
         }
 
         match self.orientation {
-            Orientation::NorthSouth => {
+            RoadOrientation::NorthSouth => {
                 if self.origin.x != other.origin.x {
                     false
                 } else {
@@ -92,7 +92,7 @@ impl Road {
                     )
                 }
             }
-            Orientation::EastWest => {
+            RoadOrientation::EastWest => {
                 if self.origin.y != other.origin.y {
                     false
                 } else {
@@ -110,7 +110,7 @@ impl Road {
     /// Returns `true` if the road and the building overlap.
     pub fn overlaps_building(&self, building: &Building) -> bool {
         match self.orientation {
-            Orientation::NorthSouth => {
+            RoadOrientation::NorthSouth => {
                 is_inside_excl(self.origin.x, building.origin.x, building.max().x)
                     && is_overlap(
                         self.origin.y,
@@ -119,7 +119,7 @@ impl Road {
                         building.max().y,
                     )
             }
-            Orientation::EastWest => {
+            RoadOrientation::EastWest => {
                 is_inside_excl(self.origin.y, building.origin.y, building.max().y)
                     && is_overlap(
                         self.origin.x,
@@ -159,7 +159,7 @@ impl Building {
     /// Returns `true` if the building and the road overlap.
     pub fn overlaps_road(&self, road: &Road) -> bool {
         match road.orientation {
-            Orientation::NorthSouth => {
+            RoadOrientation::NorthSouth => {
                 is_inside_excl(road.origin.x, self.origin.x, self.max().x)
                     && is_overlap(
                         road.origin.y,
@@ -168,7 +168,7 @@ impl Building {
                         self.max().y,
                     )
             }
-            Orientation::EastWest => {
+            RoadOrientation::EastWest => {
                 is_inside_excl(road.origin.y, self.origin.y, self.max().y)
                     && is_overlap(
                         road.origin.x,
@@ -190,7 +190,7 @@ impl Building {
     /// the buiding.
     pub fn get_connections(&self, road: &Road) -> Vec<Vec2<usize>> {
         match road.orientation {
-            Orientation::NorthSouth => {
+            RoadOrientation::NorthSouth => {
                 let x = if self.origin.x == road.origin.x {
                     Some(self.origin.x)
                 } else if self.max().x == road.origin.x {
@@ -212,7 +212,7 @@ impl Building {
                     vec![]
                 }
             }
-            Orientation::EastWest => {
+            RoadOrientation::EastWest => {
                 let y = if self.origin.y == road.origin.y {
                     Some(self.origin.y)
                 } else if self.max().y == road.origin.y {
@@ -241,7 +241,7 @@ impl Building {
 /// Orientation that indicates whether a road runs north to south or east to
 /// west.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Orientation {
+pub enum RoadOrientation {
     /// Indicates that a road runs north to south.
     NorthSouth,
 

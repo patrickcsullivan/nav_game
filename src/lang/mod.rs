@@ -1,6 +1,12 @@
-mod grammar;
+mod abs_command;
 mod lex;
-mod phrase;
+mod real_command;
+mod syntax;
 
-pub use grammar::Sentence;
+pub use abs_command::{AbsoluteCommand, AbsoluteCommandRotation};
 pub use lex::Lexeme;
+pub use syntax::Sentence;
+
+// String -> Tokens -> Lexems -> Syntax Tree (Sentence) -> [Rel Command] -|
+//                                                                   Map  +--> [Abs Command]
+//                                                              Position -|

@@ -1,5 +1,6 @@
 mod lang;
 mod map;
+mod pose;
 mod state;
 
 use map::grid::from_csvs;
