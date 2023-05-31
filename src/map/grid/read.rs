@@ -1,4 +1,6 @@
-use super::{Builder, BuilderError, Building, MapGrid, Road, RoadOrientation};
+use crate::map::RoadOrientation;
+
+use super::{Builder, BuilderError, MapGrid};
 use csv::StringRecord;
 use std::io;
 use thiserror::Error;

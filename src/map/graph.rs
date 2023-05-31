@@ -1,19 +1,27 @@
-use super::grid::{Building, CoordBuildingAdjacency, MapGrid};
+use super::{Building, CoordBuildingAdjacency, MapGrid};
 use iter_tools::Itertools;
 use vek::Vec2;
 
 /// A node in the graph that represents some building.
+#[derive(Debug, Clone)]
 pub struct BuildingNode {
     building: Building,
 }
 
 impl BuildingNode {
+    /// Returns a new building node.
     pub fn new(building: Building) -> Self {
         Self { building }
+    }
+
+    /// Returns the building inside the node.
+    pub fn building(&self) -> &Building {
+        &self.building
     }
 }
 
 /// A node in the graph that represents a coordinate along some road.
+#[derive(Debug, Clone, Copy)]
 pub struct RoadCoordNode {
     coord: Vec2<usize>,
     north: Option<Vec2<usize>>,
@@ -80,6 +88,7 @@ impl RoadCoordNode {
 
 /// A graph that connects coordinates along roads to each other and to buildings
 /// in the game map.
+#[derive(Debug, Clone)]
 pub struct MapGraph {
     building_nodes: Vec<BuildingNode>,
     road_coord_nodes: Vec<RoadCoordNode>,
@@ -99,12 +108,11 @@ impl MapGraph {
             .into_iter()
             .map(|b| BuildingNode::new(b.clone()))
             .collect_vec();
-        graph.building_nodes = building_nodes;
 
         for r in grid.roads() {
-            for b in building_nodes.iter().map(|node| node.building) {
+            for b in building_nodes.iter().map(|node| node.building()) {
                 for (coord, adj) in b.get_connections(r) {
-                    let mut coord_node = graph.get_or_create_road_coord(coord);
+                    let coord_node = graph.get_or_create_road_coord(coord);
                     coord_node.set_building_adjacencies(b.id(), adj);
                 }
             }
@@ -132,15 +140,15 @@ impl MapGraph {
     /// yet.
     fn get_or_create_road_coord(&mut self, coord: Vec2<usize>) -> &RoadCoordNode {
         if let Some(node) = self.get_road_cooord(coord) {
-            node
-        } else {
-            let node = RoadCoordNode::new(coord);
-            self.road_coord_nodes.push(node);
-
-            // We can safely unwrap because there is guaranteed to be at least
-            // one element since we just pushed the new node.
-            self.road_coord_nodes.last().unwrap()
+            return node;
         }
+
+        let node = RoadCoordNode::new(coord);
+        self.road_coord_nodes.push(node);
+
+        // We can safely unwrap because there is guaranteed to be at least
+        // one element since we just pushed the new node.
+        self.road_coord_nodes.last().unwrap()
     }
 }
 
