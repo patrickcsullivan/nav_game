@@ -135,7 +135,10 @@ impl Road {
 /// A building.
 #[derive(Debug, Clone)]
 pub struct Building {
-    /// Origin of the building.
+    /// Unique identifier.
+    id: usize,
+
+    /// Origin of the building, the coordinates of its southwest most corner.
     origin: Vec2<usize>,
 
     /// Width and height of the building.
@@ -147,8 +150,13 @@ pub struct Building {
 
 impl Building {
     /// Returns a new building.
-    pub fn new(origin: Vec2<usize>, dim: Vec2<usize>, name: Option<String>) -> Self {
-        Self { origin, dim, name }
+    pub fn new(id: usize, origin: Vec2<usize>, dim: Vec2<usize>, name: Option<String>) -> Self {
+        Self {
+            id,
+            origin,
+            dim,
+            name,
+        }
     }
 
     /// Returns the maximum coordinates of the building.

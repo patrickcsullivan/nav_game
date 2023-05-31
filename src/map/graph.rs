@@ -1,5 +1,18 @@
-// use coord::vec2::Vec2;
+use vek::Vec2;
 
+use super::grid::Building;
+
+pub struct BuildingNode {
+    building: Building,
+}
+
+pub struct RoadCoordNode {
+    coord: Vec2<usize>,
+    north: Option<Vec2<usize>>,
+    east: Option<Vec2<usize>>,
+    south: Option<Vec2<usize>>,
+    west: Option<Vec2<usize>>,
+}
 // /// A grid representing the map of the game world.
 // ///
 // /// Streets can exist along the lines of the grid, and buildings can exist

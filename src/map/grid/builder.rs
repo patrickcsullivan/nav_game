@@ -1,6 +1,4 @@
-use std::{error::Error, fmt};
-
-use super::{Building, MapGrid, Road};
+use super::{Building, MapGrid, Road, RoadOrientation};
 use iter_tools::Itertools;
 use thiserror::Error;
 use vek::Vec2;
@@ -20,12 +18,22 @@ impl Builder {
         }
     }
 
-    pub fn road(mut self, road: Road) -> Self {
+    pub fn road(
+        mut self,
+        origin: Vec2<usize>,
+        length: usize,
+        orientation: RoadOrientation,
+        rank: u8,
+        name: Option<String>,
+    ) -> Self {
+        let road = Road::new(origin, length, orientation, rank, name);
         self.roads.push(road);
         self
     }
 
-    pub fn building(mut self, building: Building) -> Self {
+    pub fn building(mut self, origin: Vec2<usize>, dim: Vec2<usize>, name: Option<String>) -> Self {
+        let id = self.buildings.len();
+        let building = Building::new(id, origin, dim, name);
         self.buildings.push(building);
         self
     }
