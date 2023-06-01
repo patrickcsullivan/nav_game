@@ -111,6 +111,7 @@ impl MapGraph {
             .map(|b| BuildingNode::new(b.clone()))
             .collect_vec();
 
+        // Add every coordinate that is adjacent to a building.
         for r in grid.roads() {
             for b in building_nodes.iter().map(|node| node.building()) {
                 for (coord, adj) in b.get_connections(r) {
@@ -119,6 +120,9 @@ impl MapGraph {
                 }
             }
         }
+
+        // Add every road origin and terminus.
+        // for r in grid.road() {}
 
         graph.building_nodes = building_nodes;
         graph
@@ -182,4 +186,19 @@ impl MapGraph {
 
 //     /// Name of the building.
 //     name: Option<String>,
+// }
+
+// fn m() {
+//     MapGraph {
+//         building_nodes: [
+//             BuildingNode { building: Building { id: 0, origin: Vec2 { x: 2, y: 4 }, dim: Vec2 { x: 1, y: 1 }, name: Some("la casa") } }, BuildingNode { building: Building { id: 1, origin: Vec2 { x: 2, y: 5 }, dim: Vec2 { x: 1, y: 1 }, name: Some("la tienda") } }, BuildingNode { building: Building { id: 2, origin: Vec2 { x: 4, y: 1 }, dim: Vec2 { x: 1, y: 1 }, name: Some("el hospital") } }, BuildingNode { building: Building { id: 3, origin: Vec2 { x: 4, y: 6 }, dim: Vec2 { x: 4, y: 1 }, name: Some("el parque") } }, BuildingNode { building: Building { id: 4, origin: Vec2 { x: 6, y: 2 }, dim: Vec2 { x: 2, y: 1 }, name: Some("el supermercado") } }, BuildingNode { building: Building { id: 5, origin: Vec2 { x: 8, y: 3 }, dim: Vec2 { x: 2, y: 2 }, name: None } }],
+//         road_coord_nodes: {
+//             Vec2 { x: 2, y: 5 }: RoadCoordNode { coord: Vec2 { x: 2, y: 5 }, north: None, east: None, south: None, west: None, northeast: Some(1), southeast: Some(0), southwest: None, northwest: None },
+//             Vec2 { x: 4, y: 2 }: RoadCoordNode { coord: Vec2 { x: 4, y: 2 }, north: None, east: None, south: None, west: None, northeast: None, southeast: Some(2), southwest: None, northwest: None },
+//             Vec2 { x: 6, y: 3 }: RoadCoordNode { coord: Vec2 { x: 6, y: 3 }, north: None, east: None, south: None, west: None, northeast: Some(4), southeast: Some(4), southwest: None, northwest: None },
+//             Vec2 { x: 8, y: 3 }: RoadCoordNode { coord: Vec2 { x: 8, y: 3 }, north: None, east: None, south: None, west: None, northeast: Some(5), southeast: None, southwest: Some(4), northwest: None },
+//             Vec2 { x: 7, y: 3 }: RoadCoordNode { coord: Vec2 { x: 7, y: 3 }, north: None, east: None, south: None, west: None, northeast: None, southeast: Some(4), southwest: Some(4), northwest: None },
+//             Vec2 { x: 10, y: 3 }: RoadCoordNode { coord: Vec2 { x: 10, y: 3 }, north: None, east: None, south: None, west: None, northeast: None, southeast: None, southwest: None, northwest: Some(5) },
+//             Vec2 { x: 4, y: 6 }: RoadCoordNode { coord: Vec2 { x: 4, y: 6 }, north: None, east: None, south: None, west: None, northeast: Some(3), southeast: None, southwest: None, northwest: None }, Vec2 { x: 5, y: 2 }: RoadCoordNode { coord: Vec2 { x: 5, y: 2 }, north: None, east: None, south: None, west: None, northeast: None, southeast: None, southwest: Some(2), northwest: Some(2) }, Vec2 { x: 2, y: 4 }: RoadCoordNode { coord: Vec2 { x: 2, y: 4 }, north: None, east: None, south: None, west: None, northeast: Some(0), southeast: None, southwest: None, northwest: None }, Vec2 { x: 2, y: 6 }: RoadCoordNode { coord: Vec2 { x: 2, y: 6 }, north: None, east: None, south: None, west: None, northeast: None, southeast: Some(1), southwest: None, northwest: None }, Vec2 { x: 8, y: 6 }: RoadCoordNode { coord: Vec2 { x: 8, y: 6 }, north: None, east: None, south: None, west: None, northeast: None, southeast: None, southwest: None, northwest: Some(3) }, Vec2 { x: 3, y: 5 }: RoadCoordNode { coord: Vec2 { x: 3, y: 5 }, north: None, east: None, south: None, west: None, northeast: None, southeast: None, southwest: Some(0), northwest: Some(1) }, Vec2 { x: 10, y: 5 }: RoadCoordNode { coord: Vec2 { x: 10, y: 5 }, north: None, east: None, south: None, west: None, northeast: None, southeast: None, southwest: Some(5), northwest: None }, Vec2 { x: 8, y: 4 }: RoadCoordNode { coord: Vec2 { x: 8, y: 4 }, north: None, east: None, south: None, west: None, northeast: Some(5), southeast: Some(5), southwest: None, northwest: None }, Vec2 { x: 8, y: 5 }: RoadCoordNode { coord: Vec2 { x: 8, y: 5 }, north: None, east: None, south: None, west: None, northeast: None, southeast: Some(5), southwest: None, northwest: None }, Vec2 { x: 3, y: 6 }: RoadCoordNode { coord: Vec2 { x: 3, y: 6 }, north: None, east: None, south: None, west: None, northeast: None, southeast: None, southwest: Some(1), northwest: None }, Vec2 { x: 8, y: 7 }: RoadCoordNode { coord: Vec2 { x: 8, y: 7 }, north: None, east: None, south: None, west: None, northeast: None, southeast: None, southwest: Some(3), northwest: None }, Vec2 { x: 8, y: 2 }: RoadCoordNode { coord: Vec2 { x: 8, y: 2 }, north: None, east: None, south: None, west: None, northeast: None, southeast: None, southwest: None, northwest: Some(4) }, Vec2 { x: 4, y: 1 }: RoadCoordNode { coord: Vec2 { x: 4, y: 1 }, north: None, east: None, south: None, west: None, northeast: Some(2), southeast: None, southwest: None, northwest: None }, Vec2 { x: 9, y: 5 }: RoadCoordNode { coord: Vec2 { x: 9, y: 5 }, north: None, east: None, south: None, west: None, northeast: None, southeast: Some(5), southwest: Some(5), northwest: None }, Vec2 { x: 6, y: 6 }: RoadCoordNode { coord: Vec2 { x: 6, y: 6 }, north: None, east: None, south: None, west: None, northeast: Some(3), southeast: None, southwest: None, northwest: Some(3) }, Vec2 { x: 9, y: 3 }: RoadCoordNode { coord: Vec2 { x: 9, y: 3 }, north: None, east: None, south: None, west: None, northeast: Some(5), southeast: None, southwest: None, northwest: Some(5) }, Vec2 { x: 7, y: 6 }: RoadCoordNode { coord: Vec2 { x: 7, y: 6 }, north: None, east: None, south: None, west: None, northeast: Some(3), southeast: None, southwest: None, northwest: Some(3) }, Vec2 { x: 3, y: 4 }: RoadCoordNode { coord: Vec2 { x: 3, y: 4 }, north: None, east: None, south: None, west: None, northeast: None, southeast: None, southwest: None, northwest: Some(0) }, Vec2 { x: 5, y: 6 }: RoadCoordNode { coord: Vec2 { x: 5, y: 6 }, north: None, east: None, south: None, west: None, northeast: Some(3), southeast: None, southwest: None, northwest: Some(3) }} }
+//     todo!()
 // }
