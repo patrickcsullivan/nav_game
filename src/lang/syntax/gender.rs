@@ -2,7 +2,7 @@
 pub enum Gender {
     Feminine,
     Masculine,
-    Neutral,
+    // Neutral,
 }
 
 pub trait HasGender {
@@ -16,7 +16,7 @@ pub trait HasGender {
         self.gender() == Gender::Masculine
     }
 
-    fn is_neutral(&self) -> bool {
-        self.gender() == Gender::Neutral
-    }
+    // fn is_neutral(&self) -> bool {
+    //     self.gender() == Gender::Neutral
+    // }
 }

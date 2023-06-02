@@ -2,7 +2,7 @@ use crate::lang::Lexeme;
 use thiserror::Error;
 
 use super::{
-    parse, DistanceNounPhrase, DistanceNounPhraseParseError, DistancePrepPhrase, ForwardNounPhrase,
+    parse, DistanceNounPhrase, DistanceNounPhraseParseError, ForwardNounPhrase,
     LeftRightTurnPrepPhrase, LeftRightTurnPrepPhraseParseError, StreetNounPhrase,
     StreetNounPhraseParseError, TurnableNounPhrase, TurnableNounPhraseParseError,
 };

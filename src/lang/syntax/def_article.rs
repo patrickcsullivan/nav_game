@@ -27,7 +27,7 @@ impl DefiniteArticle {
     }
 
     pub fn try_parse_la(lexemes: &[Lexeme]) -> Option<(Self, &[Lexeme])> {
-        Self::try_parse(lexemes).filter(|(a, rest)| a.is_fem() && a.is_sing())
+        Self::try_parse(lexemes).filter(|(a, _rest)| a.is_fem() && a.is_sing())
     }
 }
 

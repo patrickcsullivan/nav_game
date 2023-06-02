@@ -22,14 +22,6 @@ impl Ordinality {
     pub fn new_fem(value: usize) -> Self {
         Self::new(value, Gender::Feminine)
     }
-
-    pub fn value(&self) -> usize {
-        self.value
-    }
-
-    pub fn gender(&self) -> Gender {
-        self.gender
-    }
 }
 
 impl Ordinality {

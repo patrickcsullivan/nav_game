@@ -4,7 +4,6 @@
 mod def_article;
 mod distance_n;
 mod distance_np;
-mod distance_pp;
 mod forward_np;
 mod gender;
 mod number;
@@ -20,7 +19,6 @@ mod turnable_np;
 
 pub use def_article::DefiniteArticle;
 pub use distance_np::{DistanceNounPhrase, ParseError as DistanceNounPhraseParseError};
-pub use distance_pp::DistancePrepPhrase;
 pub use forward_np::ForwardNounPhrase;
 pub use number::Number;
 pub use ordinality::{Ordinality, ParseError as OrdinalityParseError};

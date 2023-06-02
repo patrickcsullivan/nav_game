@@ -1,10 +1,6 @@
-use std::fmt::Display;
-
-use thiserror::Error;
-
 use crate::lang::Lexeme;
-
-use super::gender::{Gender, HasGender};
+use std::fmt::Display;
+use thiserror::Error;
 
 /// A number.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -42,13 +38,6 @@ impl Number {
 
     pub fn quatro() -> Self {
         Self::Mas(4)
-    }
-
-    pub fn value(&self) -> usize {
-        match self {
-            Number::Unx(_) => 1,
-            Number::Mas(n) => *n,
-        }
     }
 
     pub fn try_parse(lexemes: &[Lexeme]) -> Result<(Self, &[Lexeme]), ParseError> {
