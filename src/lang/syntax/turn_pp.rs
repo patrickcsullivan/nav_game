@@ -12,7 +12,7 @@ use super::{parse, TurnDirectionNounPhrase, TurnDirectionNounPhraseParseError};
 /// * "a mano derecha"
 #[allow(clippy::enum_variant_names)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct LeftRightTurnPrepPhrase(TurnDirectionNounPhrase);
+pub struct LeftRightTurnPrepPhrase(pub TurnDirectionNounPhrase);
 
 impl LeftRightTurnPrepPhrase {
     pub fn try_parse(lexemes: &[Lexeme]) -> Result<(Self, &[Lexeme]), ParseError> {

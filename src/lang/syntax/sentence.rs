@@ -45,6 +45,9 @@ pub enum Sentence {
     /// Examples:
     /// * Continúa todo derecho hasta la primeroa calle.
     /// * Continúa derecho hasta la segunda calle.
+    ///
+    /// Not supported but should be:
+    /// * Continúa derecho hasta la segunda calle a la izquierda.
     ContinúaNpHastaNp(ForwardNounPhrase, StreetNounPhrase),
 }
 

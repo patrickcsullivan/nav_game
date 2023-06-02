@@ -3,7 +3,7 @@ use crate::lang::{syntax::parse, Lexeme};
 use thiserror::Error;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct TurnDirectionNounPhrase(TurnDirectionNoun);
+pub struct TurnDirectionNounPhrase(pub TurnDirectionNoun);
 
 impl TurnDirectionNounPhrase {
     pub fn try_parse(lexemes: &[Lexeme]) -> Result<(Self, &[Lexeme]), ParseError> {
