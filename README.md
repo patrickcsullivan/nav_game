@@ -1,14 +1,11 @@
 # TODO:
-* Parsing lexemes -> syntax tree.
-  * Finish continuar
-* Refactor map grid.
+* DONE Parsing lexemes -> syntax tree.
+  * DONE Finish continuar
 
-* Build graph.
-* Syntax tree + graph -> real command.
-* Real command + graph -> absolute command.
+* Syntax syntax tree -> real command.
+* Refactor map.
+* Real command + map -> absolute command.
 * Detect success.
 * UI...
   * Look into open source sprite sets.
-  
-* Sentences to support:
-  * "Continua dos calles". Currently only allows "Continua dos quadras."
+* Display parse errors.

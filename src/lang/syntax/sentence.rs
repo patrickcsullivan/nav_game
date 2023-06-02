@@ -38,6 +38,7 @@ pub enum Sentence {
 
     /// Examples:
     /// * Continúa todo derecho dos quadras.
+    /// * Continúa todo derecho dos calles.
     /// * Continúa derecho una quadra.
     ContinúaNpNp(ForwardNounPhrase, DistanceNounPhrase),
 
