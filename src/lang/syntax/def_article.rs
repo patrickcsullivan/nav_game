@@ -4,12 +4,12 @@ use super::{
 };
 use crate::lang::Lexeme;
 
-pub struct Article {
+pub struct DefiniteArticle {
     gender: Gender,
     quantity: Quantity,
 }
 
-impl Article {
+impl DefiniteArticle {
     pub fn fem_sing() -> Self {
         Self {
             gender: Gender::Feminine,
@@ -31,13 +31,13 @@ impl Article {
     }
 }
 
-impl HasGender for Article {
+impl HasGender for DefiniteArticle {
     fn gender(&self) -> Gender {
         self.gender
     }
 }
 
-impl HasQuantity for Article {
+impl HasQuantity for DefiniteArticle {
     fn quantity(&self) -> Quantity {
         self.quantity
     }

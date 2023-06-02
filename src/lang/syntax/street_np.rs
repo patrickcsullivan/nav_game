@@ -1,6 +1,6 @@
 use thiserror::Error;
 
-use super::{Article, Ordinality, OrdinalityParseError};
+use super::{gender::HasGender, DefiniteArticle, Ordinality};
 use crate::lang::Lexeme;
 
 /// A noun phrase describing a specific street.
@@ -13,14 +13,15 @@ pub enum StreetNounPhrase {
 impl StreetNounPhrase {
     pub fn try_parse(lexemes: &[Lexeme]) -> Result<(Self, &[Lexeme]), ParseError> {
         let idx = lexemes
-            .into_iter()
+            .iter()
             .position(|&l| l == Lexeme::Calle)
             .ok_or(ParseError::MissingCalle)?;
         let (before_calle, after_incl_calle) = lexemes.split_at(idx);
 
         // Try to get the article from the start of the lexemes.
+        // TODO: If additional articles are added, check for gender.
         let (_, before_calle) =
-            Article::try_parse_la(before_calle).ok_or(ParseError::MissingArticle)?;
+            DefiniteArticle::try_parse_la(before_calle).ok_or(ParseError::MissingArticle)?;
 
         // It is safe to unwrap because we know after_incl_calle includes at
         // least the element at lexemes[idx].
@@ -38,7 +39,16 @@ impl StreetNounPhrase {
             // If there are lexemes between "la" and "calle" then they must be
             // an ordinality.
             let (ord, after_ord) = Ordinality::try_parse(before_calle)
-                .map_err(ParseError::LexemesBeforeCalleNotOrdinality)?;
+                .map_err(|_| ParseError::LexemesBeforeCalleNotOrdinality)?;
+
+            if !after_ord.is_empty() {
+                return Err(ParseError::LexemesBeforeCalleNotOrdinality);
+            }
+
+            if !ord.is_fem() {
+                return Err(ParseError::OrdinalityGender(ord));
+            }
+
             Ok((Self::LaCalleOrd(ord), after_calle))
         }
     }
@@ -52,6 +62,9 @@ pub enum ParseError {
     #[error("\"calle\" must be preceded by the article \"la\".")]
     MissingArticle,
 
+    #[error("The gender of the ordinality must be feminine to match \"calle\".")]
+    OrdinalityGender(Ordinality),
+
     #[error("The word between \"la\" and \"calle\" must be an ordinality.")]
-    LexemesBeforeCalleNotOrdinality(OrdinalityParseError),
+    LexemesBeforeCalleNotOrdinality,
 }

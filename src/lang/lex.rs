@@ -62,6 +62,9 @@ pub enum Lexeme {
     // "street"
     Calle,
 
+    // "streets"
+    Calles,
+
     // "block"
     Quadra,
 
@@ -90,7 +93,13 @@ pub enum Lexeme {
     /// "continue" (imperitive)
     Continúa,
 
-    /// "one"
+    // "a" or "one (masculine)"
+    Un,
+
+    // "one (feminine)"
+    Una,
+
+    /// "one (masculine)"
     Uno,
 
     /// "two"
@@ -101,6 +110,9 @@ pub enum Lexeme {
 
     /// "four"
     Quatro,
+
+    // "until"
+    Hasta,
 }
 
 impl Lexeme {
@@ -145,11 +157,15 @@ impl Lexeme {
             "tercero" => Ok(Lexeme::Tercero),
             "cuarta" => Ok(Lexeme::Cuarta),
             "cuarto" => Ok(Lexeme::Cuarto),
+            "un" => Ok(Lexeme::Un),
+            "una" => Ok(Lexeme::Una),
             "uno" => Ok(Lexeme::Uno),
             "dos" => Ok(Lexeme::Dos),
             "tres" => Ok(Lexeme::Tres),
             "quatro" => Ok(Lexeme::Quatro),
             "calle" => Ok(Lexeme::Calle),
+            "calles" => Ok(Lexeme::Calles),
+            "hasta" => Ok(Lexeme::Hasta),
             _ => Err(LexError(s.to_string())),
         }
     }
@@ -184,11 +200,15 @@ impl Display for Lexeme {
             Lexeme::Tercero => "tercero",
             Lexeme::Cuarta => "cuarta",
             Lexeme::Cuarto => "cuarto",
+            Lexeme::Un => "un",
+            Lexeme::Una => "una",
             Lexeme::Uno => "uno",
             Lexeme::Dos => "dos",
             Lexeme::Tres => "tres",
             Lexeme::Quatro => "quatro",
             Lexeme::Calle => "calle",
+            Lexeme::Calles => "calles",
+            Lexeme::Hasta => "hasta",
         };
         write!(f, "{s}")
     }

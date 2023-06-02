@@ -9,4 +9,6 @@
 * Detect success.
 * UI...
   * Look into open source sprite sets.
-    
+  
+* Sentences to support:
+  * "Continua dos calles". Currently only allows "Continua dos quadras."

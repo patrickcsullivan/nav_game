@@ -1,7 +1,7 @@
 use crate::lang::Lexeme;
 use thiserror::Error;
 
-use super::gender::Gender;
+use super::gender::{Gender, HasGender};
 
 /// The ordering of an item in a sequence.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -47,6 +47,12 @@ impl Ordinality {
             _ => Err(ParseError::NotOrdinality),
         }?;
         Ok((ord, rest))
+    }
+}
+
+impl HasGender for Ordinality {
+    fn gender(&self) -> Gender {
+        self.gender
     }
 }
 

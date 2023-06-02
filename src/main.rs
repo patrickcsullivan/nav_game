@@ -16,10 +16,7 @@ fn main() {
             return;
         }
 
-        let lexemes_rslt = Lexeme::parse_line(&line);
-        println!("{:?}", lexemes_rslt);
-
-        if let Ok(lexemes) = lexemes_rslt {
+        if let Ok(lexemes) = Lexeme::parse_line(&line) {
             let s_rslt = Sentence::parse(&lexemes);
             println!("{:?}", s_rslt);
         }

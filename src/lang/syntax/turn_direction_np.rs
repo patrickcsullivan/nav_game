@@ -1,4 +1,4 @@
-use super::{Article, TurnDirectionNoun};
+use super::{DefiniteArticle, TurnDirectionNoun};
 use crate::lang::{syntax::parse, Lexeme};
 use thiserror::Error;
 
@@ -12,7 +12,7 @@ impl TurnDirectionNounPhrase {
 
         let ((), rest) = parse::or(
             before,
-            |ls| Article::try_parse_la(ls).map(|(_, rest)| ((), rest)),
+            |ls| DefiniteArticle::try_parse_la(ls).map(|(_, rest)| ((), rest)),
             |ls| parse::consume_lexeme(ls, Lexeme::Mano),
         )
         .ok_or(ParseError::MissingLaOrMano)?;

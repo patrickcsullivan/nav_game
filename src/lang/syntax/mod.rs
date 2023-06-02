@@ -1,7 +1,8 @@
 //! This module defines the grammar of the language used in the game to describe
 //! directions.
 
-mod article;
+mod def_article;
+mod distance_n;
 mod distance_np;
 mod distance_pp;
 mod forward_np;
@@ -17,8 +18,8 @@ mod turn_direction_np;
 mod turn_pp;
 mod turnable_np;
 
-pub use article::Article;
-pub use distance_np::DistanceNounPhrase;
+pub use def_article::DefiniteArticle;
+pub use distance_np::{DistanceNounPhrase, ParseError as DistanceNounPhraseParseError};
 pub use distance_pp::DistancePrepPhrase;
 pub use forward_np::ForwardNounPhrase;
 pub use number::Number;

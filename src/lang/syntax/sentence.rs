@@ -2,8 +2,9 @@ use crate::lang::Lexeme;
 use thiserror::Error;
 
 use super::{
-    parse, DistanceNounPhrase, DistancePrepPhrase, ForwardNounPhrase, LeftRightTurnPrepPhrase,
-    LeftRightTurnPrepPhraseParseError, TurnableNounPhrase, TurnableNounPhraseParseError,
+    parse, DistanceNounPhrase, DistanceNounPhraseParseError, DistancePrepPhrase, ForwardNounPhrase,
+    LeftRightTurnPrepPhrase, LeftRightTurnPrepPhraseParseError, StreetNounPhrase,
+    StreetNounPhraseParseError, TurnableNounPhrase, TurnableNounPhraseParseError,
 };
 
 /// A sentence which is either a delcaration of where something is or a command
@@ -41,9 +42,9 @@ pub enum Sentence {
     ContinúaNpNp(ForwardNounPhrase, DistanceNounPhrase),
 
     /// Examples:
-    /// * Continúa todo derecho hasta la primero calle.
-    /// * Continúa derecho hasta la segundo calle.
-    ContinúaNpPp(ForwardNounPhrase, DistancePrepPhrase),
+    /// * Continúa todo derecho hasta la primeroa calle.
+    /// * Continúa derecho hasta la segunda calle.
+    ContinúaNpHastaNp(ForwardNounPhrase, StreetNounPhrase),
 }
 
 impl Sentence {
@@ -63,7 +64,7 @@ impl Sentence {
             Lexeme::Está => Self::try_parse_está(rest),
             Lexeme::Toma => Self::try_parse_toma(rest),
             Lexeme::Gira => Self::try_parse_gira(rest),
-            // Lexeme::Continúa => todo!(),
+            Lexeme::Continúa => Self::try_parse_continúa(rest),
             _ => Err(ParseError::NonInitialVerb(*first)),
         }
     }
@@ -101,6 +102,24 @@ impl Sentence {
             Ok((Self::GiraPp(pp), rest))
         }
     }
+
+    fn try_parse_continúa(lexemes: &[Lexeme]) -> Result<(Self, &[Lexeme]), ParseError> {
+        let (f_np, rest) =
+            ForwardNounPhrase::try_parse(lexemes).map_err(|_| ParseError::ContinúaNpXFirst)?;
+
+        match parse::consume_lexeme(rest, Lexeme::Hasta) {
+            Some(((), rest)) => {
+                let (s_np, rest) = StreetNounPhrase::try_parse(rest)
+                    .map_err(ParseError::ContinúaNpHastaNpSecond)?;
+                Ok((Self::ContinúaNpHastaNp(f_np, s_np), rest))
+            }
+            None => {
+                let (d_np, rest) =
+                    DistanceNounPhrase::try_parse(rest).map_err(ParseError::ContinúaNpNpSecond)?;
+                Ok((Sentence::ContinúaNpNp(f_np, d_np), rest))
+            }
+        }
+    }
 }
 
 #[derive(Debug, Error)]
@@ -131,6 +150,15 @@ pub enum ParseError {
 
     #[error("GiraNpPpSecond: {0}")]
     GiraNpPpSecond(LeftRightTurnPrepPhraseParseError),
+
+    #[error("ContinúaNpXFirst")]
+    ContinúaNpXFirst,
+
+    #[error("ContinúaNpNpSecond: {0}")]
+    ContinúaNpNpSecond(DistanceNounPhraseParseError),
+
+    #[error("ContinúaNpHastaNp: {0}")]
+    ContinúaNpHastaNpSecond(StreetNounPhraseParseError),
 
     #[error("The sentence contains unxpected words after the prepositional phrase.")]
     LexemesAfterPrepositinalPhrase(Vec<Lexeme>),
