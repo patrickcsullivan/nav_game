@@ -1,7 +1,7 @@
 mod abs_command;
 mod lex;
 mod real_command;
-mod syntax;
+pub mod syntax;
 
 pub use abs_command::{AbsoluteCommand, AbsoluteCommandRotation};
 pub use lex::Lexeme;

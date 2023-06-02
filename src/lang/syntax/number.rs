@@ -3,6 +3,7 @@ use thiserror::Error;
 use crate::lang::Lexeme;
 
 /// A number.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Number {
     Uno,
     Dos,

@@ -1,40 +1,59 @@
 use crate::lang::Lexeme;
 use thiserror::Error;
 
+use super::gender::Gender;
+
 /// The ordering of an item in a sequence.
-pub enum Ordinality {
-    Primera,
-    Primero,
-    Segunda,
-    Segundo,
-    Tercera,
-    Tercero,
-    Cuarta,
-    Cuarto,
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Ordinality {
+    value: usize,
+    gender: Gender,
 }
 
-impl TryFrom<&[Lexeme]> for Ordinality {
-    type Error = ParseOrdinalityError;
+impl Ordinality {
+    pub fn new(value: usize, gender: Gender) -> Self {
+        Self { value, gender }
+    }
 
-    fn try_from(words: &[Lexeme]) -> Result<Self, Self::Error> {
-        if let &[word] = words {
-            match word {
-                Lexeme::Primera => Ok(Ordinality::Primera),
-                Lexeme::Primero => Ok(Ordinality::Primero),
-                Lexeme::Segunda => Ok(Ordinality::Segunda),
-                Lexeme::Segundo => Ok(Ordinality::Segundo),
-                Lexeme::Tercera => Ok(Ordinality::Tercera),
-                Lexeme::Tercero => Ok(Ordinality::Tercero),
-                Lexeme::Cuarta => Ok(Ordinality::Cuarta),
-                Lexeme::Cuarto => Ok(Ordinality::Cuarto),
-                _ => Err(ParseOrdinalityError()),
-            }
-        } else {
-            Err(ParseOrdinalityError())
-        }
+    pub fn new_masc(value: usize) -> Self {
+        Self::new(value, Gender::Masculine)
+    }
+
+    pub fn new_fem(value: usize) -> Self {
+        Self::new(value, Gender::Feminine)
+    }
+
+    pub fn value(&self) -> usize {
+        self.value
+    }
+
+    pub fn gender(&self) -> Gender {
+        self.gender
+    }
+}
+
+impl Ordinality {
+    pub fn try_parse(lexemes: &[Lexeme]) -> Result<(Self, &[Lexeme]), ParseError> {
+        let (l, rest) = lexemes.split_first().ok_or(ParseError::NoLexemes)?;
+        let ord = match l {
+            Lexeme::Primera => Ok(Self::new_fem(1)),
+            Lexeme::Primero => Ok(Self::new_masc(1)),
+            Lexeme::Segunda => Ok(Self::new_fem(2)),
+            Lexeme::Segundo => Ok(Self::new_masc(2)),
+            Lexeme::Tercera => Ok(Self::new_fem(3)),
+            Lexeme::Tercero => Ok(Self::new_masc(3)),
+            Lexeme::Cuarta => Ok(Self::new_fem(4)),
+            Lexeme::Cuarto => Ok(Self::new_masc(4)),
+            _ => Err(ParseError::NotOrdinality),
+        }?;
+        Ok((ord, rest))
     }
 }
 
 #[derive(Debug, Error)]
-#[error("The words(s) must be an ordinality.")]
-pub struct ParseOrdinalityError();
+pub enum ParseError {
+    #[error("The words(s) must be an ordinality.")]
+    NotOrdinality,
+    #[error("There are no words.")]
+    NoLexemes,
+}

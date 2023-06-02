@@ -1,6 +1,7 @@
 //! This module defines different lexemes and the logic for reading lexemes from
 //! text.
 
+use iter_tools::Itertools;
 use std::{fmt::Display, str::FromStr};
 use thiserror::Error;
 
@@ -58,6 +59,9 @@ pub enum Lexeme {
     /// "end"
     Final,
 
+    // "street"
+    Calle,
+
     // "block"
     Quadra,
 
@@ -99,6 +103,58 @@ pub enum Lexeme {
     Quatro,
 }
 
+impl Lexeme {
+    pub fn parse_line(line: &str) -> Result<Vec<Lexeme>, Vec<LexError>> {
+        let (lexemes, errs): (Vec<_>, Vec<_>) = line
+            .split_whitespace()
+            .map(Lexeme::from_str)
+            .partition_result();
+
+        if errs.is_empty() {
+            Ok(lexemes)
+        } else {
+            Err(errs)
+        }
+    }
+
+    fn from_lowercase(s: &str) -> Result<Self, LexError> {
+        match s {
+            "en" => Ok(Lexeme::En),
+            "a" => Ok(Lexeme::A),
+            "de" => Ok(Lexeme::De),
+            "al" => Ok(Lexeme::Al),
+            "la" => Ok(Lexeme::La),
+            "el" => Ok(Lexeme::El),
+            "izquierda" => Ok(Lexeme::Izquierda),
+            "derecha" => Ok(Lexeme::Derecha),
+            "final" => Ok(Lexeme::Final),
+            "todo" => Ok(Lexeme::Todo),
+            "derecho" => Ok(Lexeme::Derecho),
+            "mano" => Ok(Lexeme::Mano),
+            "primera" => Ok(Lexeme::Primera),
+            "segunda" => Ok(Lexeme::Segunda),
+            "quadra" => Ok(Lexeme::Quadra),
+            "quadras" => Ok(Lexeme::Quadras),
+            "está" => Ok(Lexeme::Está),
+            "toma" => Ok(Lexeme::Toma),
+            "gira" => Ok(Lexeme::Gira),
+            "continúa" => Ok(Lexeme::Continúa),
+            "primero" => Ok(Lexeme::Primero),
+            "segundo" => Ok(Lexeme::Segundo),
+            "tercera" => Ok(Lexeme::Tercera),
+            "tercero" => Ok(Lexeme::Tercero),
+            "cuarta" => Ok(Lexeme::Cuarta),
+            "cuarto" => Ok(Lexeme::Cuarto),
+            "uno" => Ok(Lexeme::Uno),
+            "dos" => Ok(Lexeme::Dos),
+            "tres" => Ok(Lexeme::Tres),
+            "quatro" => Ok(Lexeme::Quatro),
+            "calle" => Ok(Lexeme::Calle),
+            _ => Err(LexError(s.to_string())),
+        }
+    }
+}
+
 impl Display for Lexeme {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let s = match self {
@@ -132,6 +188,7 @@ impl Display for Lexeme {
             Lexeme::Dos => "dos",
             Lexeme::Tres => "tres",
             Lexeme::Quatro => "quatro",
+            Lexeme::Calle => "calle",
         };
         write!(f, "{s}")
     }
@@ -141,39 +198,7 @@ impl FromStr for Lexeme {
     type Err = LexError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "en" => Ok(Lexeme::En),
-            "a" => Ok(Lexeme::A),
-            "de" => Ok(Lexeme::De),
-            "al" => Ok(Lexeme::Al),
-            "la" => Ok(Lexeme::La),
-            "el" => Ok(Lexeme::El),
-            "izquierda" => Ok(Lexeme::Izquierda),
-            "derecha" => Ok(Lexeme::Derecha),
-            "final" => Ok(Lexeme::Final),
-            "todo" => Ok(Lexeme::Todo),
-            "derecho" => Ok(Lexeme::Derecho),
-            "mano" => Ok(Lexeme::Mano),
-            "primera" => Ok(Lexeme::Primera),
-            "segunda" => Ok(Lexeme::Segunda),
-            "quadra" => Ok(Lexeme::Quadra),
-            "quadras" => Ok(Lexeme::Quadras),
-            "está" => Ok(Lexeme::Está),
-            "toma" => Ok(Lexeme::Toma),
-            "gira" => Ok(Lexeme::Gira),
-            "continúa" => Ok(Lexeme::Continúa),
-            "primero" => Ok(Lexeme::Primero),
-            "segundo" => Ok(Lexeme::Segundo),
-            "tercera" => Ok(Lexeme::Tercera),
-            "tercero" => Ok(Lexeme::Tercero),
-            "cuarta" => Ok(Lexeme::Cuarta),
-            "cuarto" => Ok(Lexeme::Cuarto),
-            "uno" => Ok(Lexeme::Uno),
-            "dos" => Ok(Lexeme::Dos),
-            "tres" => Ok(Lexeme::Tres),
-            "quatro" => Ok(Lexeme::Quatro),
-            _ => Err(LexError(s.to_string())),
-        }
+        Self::from_lowercase(&s.to_lowercase())
     }
 }
 
