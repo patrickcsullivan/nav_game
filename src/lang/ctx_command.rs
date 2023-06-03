@@ -8,67 +8,56 @@ use super::{
     Sentence,
 };
 
-/// Navigation command where distances are specified in real world terms.
+/// Navigation command where distances in terms of the context of the player's
+/// current pose in the game map.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum RealWorldCommand {
-    Forward(RealWorldCommandDistance),
+pub enum CtxCommand {
+    Forward(CtxCommandDistance),
     Rotate(TurnDirection),
 }
 
 /// Navigation command to move forward.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[allow(clippy::enum_variant_names)]
-pub enum RealWorldCommandDistance {
+pub enum CtxCommandDistance {
     ThisOrNextStreet(Option<TurnDirection>),
     NthStreet(usize, Option<TurnDirection>),
 }
 
-impl From<Sentence> for Vec<RealWorldCommand> {
+impl From<Sentence> for Vec<CtxCommand> {
     fn from(s: Sentence) -> Self {
         match s {
             Sentence::EstáTurnPp(pp) => {
                 let rot = pp.into();
-                vec![RealWorldCommand::Rotate(rot)]
+                vec![CtxCommand::Rotate(rot)]
             }
             Sentence::EstáEnNpPp(np, pp) => {
                 let rot = pp.into();
-                let dist = RealWorldCommandDistance::from_turnable_np(np, rot);
-                vec![
-                    RealWorldCommand::Forward(dist),
-                    RealWorldCommand::Rotate(rot),
-                ]
+                let dist = CtxCommandDistance::from_turnable_np(np, rot);
+                vec![CtxCommand::Forward(dist), CtxCommand::Rotate(rot)]
             }
             Sentence::GiraPp(pp) => {
                 let rot = pp.into();
-                let dist = RealWorldCommandDistance::ThisOrNextStreet(Some(rot));
-                vec![
-                    RealWorldCommand::Forward(dist),
-                    RealWorldCommand::Rotate(rot),
-                ]
+                let dist = CtxCommandDistance::ThisOrNextStreet(Some(rot));
+                vec![CtxCommand::Forward(dist), CtxCommand::Rotate(rot)]
             }
             Sentence::GiraNpPp(np, pp) => {
                 let rot = pp.into();
-                let dist = RealWorldCommandDistance::from_turnable_np(np, rot);
-                vec![
-                    RealWorldCommand::Forward(dist),
-                    RealWorldCommand::Rotate(rot),
-                ]
+                let dist = CtxCommandDistance::from_turnable_np(np, rot);
+                vec![CtxCommand::Forward(dist), CtxCommand::Rotate(rot)]
             }
             Sentence::TomaNpPp(np, pp) => {
                 let rot = pp.into();
-                let dist = RealWorldCommandDistance::from_turnable_np(np, rot);
-                vec![
-                    RealWorldCommand::Forward(dist),
-                    RealWorldCommand::Rotate(rot),
-                ]
+                let dist = CtxCommandDistance::from_turnable_np(np, rot);
+                vec![CtxCommand::Forward(dist), CtxCommand::Rotate(rot)]
             }
             Sentence::ContinúaNpNp(_, pp) => {
                 let dist = pp.into();
-                vec![RealWorldCommand::Forward(dist)]
+                vec![CtxCommand::Forward(dist)]
             }
             Sentence::ContinúaNpHastaNp(_, pp) => {
                 let dist = pp.into();
-                vec![RealWorldCommand::Forward(dist)]
+                vec![CtxCommand::Forward(dist)]
             }
         }
     }
@@ -97,7 +86,7 @@ impl From<TurnDirectionNoun> for TurnDirection {
     }
 }
 
-impl From<DistanceNounPhrase> for RealWorldCommandDistance {
+impl From<DistanceNounPhrase> for CtxCommandDistance {
     fn from(np: DistanceNounPhrase) -> Self {
         match np {
             DistanceNounPhrase::NQuadras(n) => Self::NthStreet(n, None),
@@ -105,7 +94,7 @@ impl From<DistanceNounPhrase> for RealWorldCommandDistance {
     }
 }
 
-impl From<StreetNounPhrase> for RealWorldCommandDistance {
+impl From<StreetNounPhrase> for CtxCommandDistance {
     fn from(np: StreetNounPhrase) -> Self {
         match np {
             StreetNounPhrase::LaCalle => Self::ThisOrNextStreet(None),
@@ -114,14 +103,14 @@ impl From<StreetNounPhrase> for RealWorldCommandDistance {
     }
 }
 
-impl RealWorldCommandDistance {
+impl CtxCommandDistance {
     fn from_turnable_np(t_np: TurnableNounPhrase, dir: TurnDirection) -> Self {
         match t_np {
             TurnableNounPhrase::Street(StreetNounPhrase::LaCalle) => {
-                RealWorldCommandDistance::ThisOrNextStreet(Some(dir))
+                CtxCommandDistance::ThisOrNextStreet(Some(dir))
             }
             TurnableNounPhrase::Street(StreetNounPhrase::LaCalleOrd(ord)) => {
-                RealWorldCommandDistance::NthStreet(ord.value(), Some(dir))
+                CtxCommandDistance::NthStreet(ord.value(), Some(dir))
             }
         }
     }

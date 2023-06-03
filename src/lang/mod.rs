@@ -1,6 +1,6 @@
 mod abs_command;
+mod ctx_command;
 mod lex;
-mod real_command;
 pub mod syntax;
 
 pub use abs_command::{AbsoluteCommand, AbsoluteCommandRotation};
