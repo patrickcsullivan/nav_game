@@ -17,10 +17,8 @@ pub enum RealWorldCommand {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[allow(clippy::enum_variant_names)]
 pub enum RealWorldCommandDistance {
-    ThisOrNextIntersection,
-    ThisOrNextDirIntersection(RealWorldCommandRotation),
-    NthIntersection(usize),
-    NthDirIntersection(usize, RealWorldCommandRotation),
+    ThisOrNextStreet(Option<RealWorldCommandRotation>),
+    NthStreet(usize, Option<RealWorldCommandRotation>),
 }
 
 /// Navigation command to rotate.
@@ -47,7 +45,7 @@ impl From<Sentence> for Vec<RealWorldCommand> {
             }
             Sentence::GiraPp(pp) => {
                 let rot = pp.into();
-                let dist = RealWorldCommandDistance::ThisOrNextDirIntersection(rot);
+                let dist = RealWorldCommandDistance::ThisOrNextStreet(Some(rot));
                 vec![
                     RealWorldCommand::Forward(dist),
                     RealWorldCommand::Rotate(rot),
@@ -107,7 +105,7 @@ impl From<TurnDirectionNoun> for RealWorldCommandRotation {
 impl From<DistanceNounPhrase> for RealWorldCommandDistance {
     fn from(np: DistanceNounPhrase) -> Self {
         match np {
-            DistanceNounPhrase::NQuadras(n) => Self::NthIntersection(n),
+            DistanceNounPhrase::NQuadras(n) => Self::NthStreet(n, None),
         }
     }
 }
@@ -115,8 +113,8 @@ impl From<DistanceNounPhrase> for RealWorldCommandDistance {
 impl From<StreetNounPhrase> for RealWorldCommandDistance {
     fn from(np: StreetNounPhrase) -> Self {
         match np {
-            StreetNounPhrase::LaCalle => Self::ThisOrNextIntersection,
-            StreetNounPhrase::LaCalleOrd(ord) => Self::NthIntersection(ord.value()),
+            StreetNounPhrase::LaCalle => Self::ThisOrNextStreet(None),
+            StreetNounPhrase::LaCalleOrd(ord) => Self::NthStreet(ord.value(), None),
         }
     }
 }
@@ -125,10 +123,10 @@ impl RealWorldCommandDistance {
     fn from_turnable_np(t_np: TurnableNounPhrase, dir: RealWorldCommandRotation) -> Self {
         match t_np {
             TurnableNounPhrase::Street(StreetNounPhrase::LaCalle) => {
-                RealWorldCommandDistance::ThisOrNextDirIntersection(dir)
+                RealWorldCommandDistance::ThisOrNextStreet(Some(dir))
             }
             TurnableNounPhrase::Street(StreetNounPhrase::LaCalleOrd(ord)) => {
-                RealWorldCommandDistance::NthDirIntersection(ord.value(), dir)
+                RealWorldCommandDistance::NthStreet(ord.value(), Some(dir))
             }
         }
     }

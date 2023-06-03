@@ -1,12 +1,9 @@
 mod lang;
 mod map;
 mod pose;
-// mod _state;
-
-use map::Map;
-use std::io::{self, BufRead};
 
 use crate::lang::{Lexeme, Sentence};
+use std::io::{self, BufRead};
 
 fn main() {
     let stdin = io::stdin();

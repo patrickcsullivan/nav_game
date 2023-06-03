@@ -1,4 +1,4 @@
-use crate::map::RoadOrientation;
+use crate::mapp::RoadOrientation;
 
 use super::{Builder, BuilderError, MapGrid};
 use csv::StringRecord;
