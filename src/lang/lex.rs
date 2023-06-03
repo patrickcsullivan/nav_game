@@ -116,58 +116,99 @@ pub enum Lexeme {
 }
 
 impl Lexeme {
-    pub fn parse_line(line: &str) -> Result<Vec<Lexeme>, Vec<LexError>> {
-        let (lexemes, errs): (Vec<_>, Vec<_>) = line
+    pub fn parse_line(line: &str) -> Result<Vec<Lexeme>, LexError> {
+        let (lexemes, unknowns): (Vec<_>, Vec<_>) = line
             .split_whitespace()
-            .map(Lexeme::from_str)
+            .map(|s| Lexeme::from_str(s).map_err(|FromStrError(s)| s))
             .partition_result();
 
-        if errs.is_empty() {
+        if unknowns.is_empty() {
             Ok(lexemes)
         } else {
-            Err(errs)
+            Err(LexError(unknowns))
         }
     }
 
-    fn from_lowercase(s: &str) -> Result<Self, LexError> {
+    fn from_lowercase(s: &str) -> Option<Lexeme> {
         match s {
-            "en" => Ok(Lexeme::En),
-            "a" => Ok(Lexeme::A),
-            "de" => Ok(Lexeme::De),
-            "al" => Ok(Lexeme::Al),
-            "la" => Ok(Lexeme::La),
-            "el" => Ok(Lexeme::El),
-            "izquierda" => Ok(Lexeme::Izquierda),
-            "derecha" => Ok(Lexeme::Derecha),
-            "final" => Ok(Lexeme::Final),
-            "todo" => Ok(Lexeme::Todo),
-            "derecho" => Ok(Lexeme::Derecho),
-            "mano" => Ok(Lexeme::Mano),
-            "primera" => Ok(Lexeme::Primera),
-            "segunda" => Ok(Lexeme::Segunda),
-            "quadra" => Ok(Lexeme::Quadra),
-            "quadras" => Ok(Lexeme::Quadras),
-            "está" => Ok(Lexeme::Está),
-            "toma" => Ok(Lexeme::Toma),
-            "gira" => Ok(Lexeme::Gira),
-            "continúa" => Ok(Lexeme::Continúa),
-            "primero" => Ok(Lexeme::Primero),
-            "segundo" => Ok(Lexeme::Segundo),
-            "tercera" => Ok(Lexeme::Tercera),
-            "tercero" => Ok(Lexeme::Tercero),
-            "cuarta" => Ok(Lexeme::Cuarta),
-            "cuarto" => Ok(Lexeme::Cuarto),
-            "un" => Ok(Lexeme::Un),
-            "una" => Ok(Lexeme::Una),
-            "uno" => Ok(Lexeme::Uno),
-            "dos" => Ok(Lexeme::Dos),
-            "tres" => Ok(Lexeme::Tres),
-            "quatro" => Ok(Lexeme::Quatro),
-            "calle" => Ok(Lexeme::Calle),
-            "calles" => Ok(Lexeme::Calles),
-            "hasta" => Ok(Lexeme::Hasta),
-            _ => Err(LexError(s.to_string())),
+            "en" => Some(Lexeme::En),
+            "a" => Some(Lexeme::A),
+            "de" => Some(Lexeme::De),
+            "al" => Some(Lexeme::Al),
+            "la" => Some(Lexeme::La),
+            "el" => Some(Lexeme::El),
+            "izquierda" => Some(Lexeme::Izquierda),
+            "derecha" => Some(Lexeme::Derecha),
+            "final" => Some(Lexeme::Final),
+            "todo" => Some(Lexeme::Todo),
+            "derecho" => Some(Lexeme::Derecho),
+            "mano" => Some(Lexeme::Mano),
+            "primera" => Some(Lexeme::Primera),
+            "segunda" => Some(Lexeme::Segunda),
+            "quadra" => Some(Lexeme::Quadra),
+            "quadras" => Some(Lexeme::Quadras),
+            "está" => Some(Lexeme::Está),
+            "toma" => Some(Lexeme::Toma),
+            "gira" => Some(Lexeme::Gira),
+            "continúa" => Some(Lexeme::Continúa),
+            "primero" => Some(Lexeme::Primero),
+            "segundo" => Some(Lexeme::Segundo),
+            "tercera" => Some(Lexeme::Tercera),
+            "tercero" => Some(Lexeme::Tercero),
+            "cuarta" => Some(Lexeme::Cuarta),
+            "cuarto" => Some(Lexeme::Cuarto),
+            "un" => Some(Lexeme::Un),
+            "una" => Some(Lexeme::Una),
+            "uno" => Some(Lexeme::Uno),
+            "dos" => Some(Lexeme::Dos),
+            "tres" => Some(Lexeme::Tres),
+            "quatro" => Some(Lexeme::Quatro),
+            "calle" => Some(Lexeme::Calle),
+            "calles" => Some(Lexeme::Calles),
+            "hasta" => Some(Lexeme::Hasta),
+            _ => None,
         }
+    }
+
+    /// Returns a `Vec` containing all variants of `Lexeme`.
+    pub fn all() -> Vec<Lexeme> {
+        vec![
+            Self::En,
+            Self::A,
+            Self::De,
+            Self::Al,
+            Self::La,
+            Self::El,
+            Self::Izquierda,
+            Self::Derecha,
+            Self::Final,
+            Self::Todo,
+            Self::Derecho,
+            Self::Mano,
+            Self::Primera,
+            Self::Segunda,
+            Self::Quadra,
+            Self::Quadras,
+            Self::Está,
+            Self::Toma,
+            Self::Gira,
+            Self::Continúa,
+            Self::Primero,
+            Self::Segundo,
+            Self::Tercera,
+            Self::Tercero,
+            Self::Cuarta,
+            Self::Cuarto,
+            Self::Un,
+            Self::Una,
+            Self::Uno,
+            Self::Dos,
+            Self::Tres,
+            Self::Quatro,
+            Self::Calle,
+            Self::Calles,
+            Self::Hasta,
+        ]
     }
 }
 
@@ -215,13 +256,17 @@ impl Display for Lexeme {
 }
 
 impl FromStr for Lexeme {
-    type Err = LexError;
+    type Err = FromStrError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Self::from_lowercase(&s.to_lowercase())
+        Self::from_lowercase(&s.to_lowercase()).ok_or(FromStrError(s.to_string()))
     }
 }
 
 #[derive(Debug, Error)]
-#[error("The word \"{0}\" is not recognized.")]
-pub struct LexError(String);
+#[error(r#""{0}" is not a recognized lexeme"#)]
+pub struct FromStrError(pub String);
+
+#[derive(Debug, Error)]
+#[error("The words are are not recognized.")]
+pub struct LexError(pub Vec<String>);

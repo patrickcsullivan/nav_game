@@ -3,9 +3,9 @@ mod direction;
 mod lang;
 mod map;
 mod pose;
+mod state;
 
 use direction::{CardinalDirection, TurnDirection};
-
 use lang::{Lexeme, Sentence};
 use map::Map;
 use pose::Pose;
@@ -28,5 +28,6 @@ fn main() {
     let roads_csv = std::fs::File::open("./example_maps/zonat_25x16_roads.csv").unwrap();
     let buildings_csv = std::fs::File::open("./example_maps/zonat_25x16_buildings.csv").unwrap();
     let map = Map::from_csvs(25, 16, roads_csv, buildings_csv).unwrap();
+
     println!("{}", map);
 }

@@ -2,24 +2,27 @@ mod abs;
 mod ctx;
 
 pub use abs::AbsoluteCommand;
-pub use ctx::CtxCommand;
+pub use ctx::{CtxCommand, CtxCommandDistance};
 
-use self::ctx::CtxCommandDistance;
 use crate::{direction::TurnDirection, Map, Pose};
 
 /// Uses the context of the `Map` and the player's `Pose` to transform a series
 /// of `CtxCommand`s into `AbsCommand`s.
-pub fn transform_cmds(cmds: &[CtxCommand], map: &Map, pose: &Pose) -> Option<Vec<AbsoluteCommand>> {
+pub fn transform_cmds(
+    cmds: &[CtxCommand],
+    map: &Map,
+    pose: &Pose,
+) -> Result<Vec<AbsoluteCommand>, CtxCommand> {
     let mut curr_pose = *pose;
     let mut abs_cmds = vec![];
 
     for cmd in cmds {
-        let mut next_abs_cmds = transform_cmd(cmd, map, &curr_pose)?;
+        let mut next_abs_cmds = transform_cmd(cmd, map, &curr_pose).ok_or(*cmd)?;
         curr_pose = curr_pose.apply_cmds(&next_abs_cmds);
         abs_cmds.append(&mut next_abs_cmds);
     }
 
-    Some(abs_cmds)
+    Ok(abs_cmds)
 }
 
 /// Uses the context of the `Map` and the player's `Pose` to transform a
@@ -102,5 +105,3 @@ fn dist_to_nth_street(
 
     Some(dist)
 }
-
-pub enum TransformError {}

@@ -4,13 +4,13 @@ mod grid;
 mod read;
 mod road;
 
-use std::io;
+pub use building::{Building, BuildingId};
 
 use self::grid::{Cell, Grid};
 use crate::direction::CardinalDirection;
-use building::{Building, BuildingId};
 use read::ReadError;
 use road::{Road, RoadId, RoadOrientation};
+use std::io;
 use vek::Vec2;
 
 #[derive(Debug, Clone)]

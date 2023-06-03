@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum CardinalDirection {
     North,
@@ -40,4 +42,14 @@ impl CardinalDirection {
 pub enum TurnDirection {
     Left,
     Right,
+}
+
+impl Display for TurnDirection {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let s = match self {
+            Self::Left => "left",
+            Self::Right => "right",
+        };
+        write!(f, "{s}")
+    }
 }
