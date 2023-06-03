@@ -1,0 +1,20 @@
+orientation,origin_x,origin_y,length,rank,name
+ns,2,0,16,1,Carrera 22
+ns,5,8,8,2,Carrera 21
+ns,7,0,16,0,Autopista Norte
+ns,11,3,11,1,Carrera 19b
+ns,13,4,7,2,Carrera 19a
+ns,15,0,11,2,
+ns,17,4,10,2,Carrera 18
+ns,19,4,4,2,
+ns,23,0,16,1,Carrera 15
+ew,0,4,8,2,Calle 83
+ew,11,4,3,2,Calle 83
+ew,15,4,3,2,Calle 83
+ew,19,4,5,2,Calle 83
+ew,7,7,18,1,Avenida Calle 85
+ew,0,8,8,2,Calle 85a
+ew,11,10,3,2,
+ew,15,10,3,2,
+ew,23,10,2,2,
+ew,0,13,24,1,Calle 87

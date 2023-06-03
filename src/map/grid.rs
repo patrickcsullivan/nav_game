@@ -3,11 +3,12 @@ use grid::Grid as InnerGrid;
 use iter_tools::Itertools;
 use vek::Vec2;
 
+#[derive(Debug, Clone)]
 pub struct Grid(InnerGrid<Cell>);
 
 impl Grid {
     pub fn new(dim: Vec2<usize>) -> Self {
-        Grid(InnerGrid::new(dim.x, dim.y))
+        Grid(InnerGrid::new(dim.y, dim.x))
     }
 
     pub fn add_road(&mut self, road: &Road) {
@@ -32,15 +33,19 @@ impl Grid {
     }
 
     pub fn get(&self, idx: Vec2<usize>) -> Option<&Cell> {
-        self.0.get(idx.x, idx.y)
+        self.0.get(idx.y, idx.x)
     }
 
     pub fn get_mut(&mut self, idx: Vec2<usize>) -> Option<&mut Cell> {
-        self.0.get_mut(idx.x, idx.y)
+        self.0.get_mut(idx.y, idx.x)
     }
 
     pub fn get_neighbors(&self, idx: Vec2<usize>) -> Neighbors<&Cell> {
         self.neighbor_indices(idx).and_then(|idx| self.get(idx))
+    }
+
+    pub fn inner_grid(&self) -> &InnerGrid<Cell> {
+        &self.0
     }
 
     fn neighbor_indices(&self, idx: Vec2<usize>) -> Neighbors<Vec2<usize>> {
@@ -95,6 +100,7 @@ fn try_vec2<T>(x: Option<T>, y: Option<T>) -> Option<Vec2<T>> {
     Some(Vec2::new(x, y))
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Cell {
     Empty,
     Road(RoadId),

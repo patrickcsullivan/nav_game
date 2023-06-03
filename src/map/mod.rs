@@ -1,4 +1,5 @@
 mod building;
+mod display;
 mod grid;
 mod read;
 mod road;
@@ -11,6 +12,7 @@ use read::ReadError;
 use road::{Road, RoadId, RoadOrientation};
 use vek::Vec2;
 
+#[derive(Debug, Clone)]
 pub struct Map {
     grid: Grid,
     roads: Vec<Road>,
