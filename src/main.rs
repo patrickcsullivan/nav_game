@@ -1,3 +1,4 @@
+mod cmd;
 mod direction;
 mod lang;
 mod map;
@@ -5,10 +6,9 @@ mod pose;
 
 use direction::{CardinalDirection, TurnDirection};
 
-use crate::{
-    lang::{Lexeme, Sentence},
-    map::Map,
-};
+use lang::{Lexeme, Sentence};
+use map::Map;
+use pose::Pose;
 use std::io::{self, BufRead};
 
 fn main() {

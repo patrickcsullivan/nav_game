@@ -1,3 +1,5 @@
+use crate::direction::CardinalDirection;
+
 use super::{Building, BuildingId, Road, RoadId, RoadOrientation};
 use grid::Grid as InnerGrid;
 use iter_tools::Itertools;
@@ -28,8 +30,8 @@ impl Grid {
     }
 
     pub fn size(&self) -> Vec2<usize> {
-        let (x, y) = self.0.size();
-        Vec2::new(x, y)
+        let (rows, cols) = self.0.size();
+        Vec2::new(cols, rows)
     }
 
     pub fn get(&self, idx: Vec2<usize>) -> Option<&Cell> {
@@ -42,6 +44,16 @@ impl Grid {
 
     pub fn get_neighbors(&self, idx: Vec2<usize>) -> Neighbors<&Cell> {
         self.neighbor_indices(idx).and_then(|idx| self.get(idx))
+    }
+
+    pub fn get_neighbor(&self, idx: Vec2<usize>, dir: CardinalDirection) -> Option<&Cell> {
+        let neighbors = self.get_neighbors(idx);
+        match dir {
+            CardinalDirection::North => neighbors.n,
+            CardinalDirection::East => neighbors.e,
+            CardinalDirection::South => neighbors.s,
+            CardinalDirection::West => neighbors.w,
+        }
     }
 
     pub fn inner_grid(&self) -> &InnerGrid<Cell> {
@@ -105,6 +117,15 @@ pub enum Cell {
     Empty,
     Road(RoadId),
     Building(BuildingId),
+}
+
+impl Cell {
+    pub fn is_road(&self) -> bool {
+        match self {
+            Cell::Road(_) => true,
+            _ => false,
+        }
+    }
 }
 
 impl Default for Cell {

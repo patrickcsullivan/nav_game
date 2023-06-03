@@ -1,6 +1,6 @@
 use crate::TurnDirection;
 
-use super::{
+use crate::lang::{
     syntax::{
         DistanceNounPhrase, LeftRightTurnPrepPhrase, StreetNounPhrase, TurnDirectionNoun,
         TurnDirectionNounPhrase, TurnableNounPhrase,

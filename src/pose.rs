@@ -1,9 +1,9 @@
-use thiserror::Error;
 use vek::Vec2;
 
 use crate::{
+    cmd::AbsoluteCommand,
     direction::{CardinalDirection, TurnDirection},
-    lang::AbsoluteCommand,
+    Map,
 };
 
 /// A position and direction in the game world.
@@ -22,23 +22,33 @@ impl Pose {
         }
     }
 
+    /// Returns the position of the player.
+    pub fn position(&self) -> Vec2<usize> {
+        self.position
+    }
+
+    /// Returns the orientation of the player.
+    pub fn direction(&self) -> CardinalDirection {
+        self.direction
+    }
+
     /// Applies the absolute command to the given pose and returns the resulting
     /// pose.
-    pub fn apply_cmd(&self, cmd: &AbsoluteCommand) -> Result<Self, CommandApplicationError> {
+    pub fn apply_cmd(&self, cmd: &AbsoluteCommand) -> Self {
         match cmd {
-            AbsoluteCommand::Rotate(rotation) => Ok(self.rotate(*rotation)),
-            AbsoluteCommand::Forward(distance) => self.move_forward(*distance),
+            AbsoluteCommand::Rotate(rotation) => self.rotate(*rotation),
+            AbsoluteCommand::Forward(distance) => self.move_forward_unsafe(*distance),
         }
     }
 
     /// Applies the absolute commands to the given pose and returns the
     /// resulting pose.
-    pub fn apply_cmds(&self, cmds: &[AbsoluteCommand]) -> Result<Self, CommandApplicationError> {
+    pub fn apply_cmds(&self, cmds: &[AbsoluteCommand]) -> Self {
         let mut pose = *self;
         for cmd in cmds {
-            pose = pose.apply_cmd(cmd)?;
+            pose = pose.apply_cmd(cmd);
         }
-        Ok(pose)
+        pose
     }
 
     /// Returns a new pose that has been rotated in the specified direction.
@@ -54,34 +64,56 @@ impl Pose {
         }
     }
 
-    /// Returns a new pose that has been moved forward the given distance.
-    fn move_forward(&self, distance: usize) -> Result<Self, CommandApplicationError> {
+    /// Returns a new pose that has been moved forward one cell in its current
+    /// orientation along a street.
+    pub fn step_forward(&self, map: &Map) -> Option<Self> {
         let delta = match self.direction {
-            CardinalDirection::North => Vec2::new(0, distance as isize),
-            CardinalDirection::East => Vec2::new(distance as isize, 0),
-            CardinalDirection::South => Vec2::new(0, distance as isize * -1),
-            CardinalDirection::West => Vec2::new(distance as isize * -1, 0),
+            CardinalDirection::North => Vec2::new(0, 1),
+            CardinalDirection::East => Vec2::new(1, 0),
+            CardinalDirection::South => Vec2::new(0, -1),
+            CardinalDirection::West => Vec2::new(-1, 0),
         };
 
         let position: Vec2<isize> = Vec2::new(self.position.x as isize, self.position.y as isize);
         let new_position = position + delta;
 
-        if new_position.iter().all(|&val| val >= 0) {
-            let new_position = new_position.map(|val| val as usize);
-            Ok(Self {
-                position: new_position,
-                direction: self.direction,
-            })
+        // This would step out of the lower bounds.
+        if new_position.iter().any(|&val| val < 0) {
+            return None;
+        }
+
+        let new_position = new_position.map(|val| val as usize);
+        if let Some(cell) = map.get(new_position) {
+            if cell.is_road() {
+                Some(Pose {
+                    position: new_position,
+                    direction: self.direction,
+                })
+            } else {
+                None
+            }
         } else {
-            Err(CommandApplicationError::NegativeOutOfBounds(
-                *self, distance,
-            ))
+            // This would step out of the upper bounds.
+            None
         }
     }
-}
 
-#[derive(Debug, Error)]
-pub enum CommandApplicationError {
-    #[error("applying the command would move the player into negative coordinates")]
-    NegativeOutOfBounds(Pose, usize),
+    /// Returns a new pose that has been moved forward the given distance.
+    pub fn move_forward_unsafe(&self, distance: usize) -> Self {
+        let delta = match self.direction {
+            CardinalDirection::North => Vec2::new(0, distance as isize),
+            CardinalDirection::East => Vec2::new(distance as isize, 0),
+            CardinalDirection::South => Vec2::new(0, -(distance as isize)),
+            CardinalDirection::West => Vec2::new(-(distance as isize), 0),
+        };
+
+        let position: Vec2<isize> = Vec2::new(self.position.x as isize, self.position.y as isize);
+        let new_position = position + delta;
+        let new_position = new_position.map(|val| val as usize);
+
+        Self {
+            position: new_position,
+            direction: self.direction,
+        }
+    }
 }

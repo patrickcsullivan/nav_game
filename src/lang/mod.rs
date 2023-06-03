@@ -1,9 +1,6 @@
-mod abs_command;
-mod ctx_command;
 mod lex;
 pub mod syntax;
 
-pub use abs_command::AbsoluteCommand;
 pub use lex::Lexeme;
 pub use syntax::Sentence;
 

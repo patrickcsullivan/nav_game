@@ -6,7 +6,8 @@ mod road;
 
 use std::io;
 
-use self::grid::Grid;
+use self::grid::{Cell, Grid};
+use crate::direction::CardinalDirection;
 use building::{Building, BuildingId};
 use read::ReadError;
 use road::{Road, RoadId, RoadOrientation};
@@ -26,6 +27,18 @@ impl Map {
             roads: vec![],
             buildings: vec![],
         }
+    }
+
+    pub fn size(&self) -> Vec2<usize> {
+        self.grid.size()
+    }
+
+    pub fn get(&self, idx: Vec2<usize>) -> Option<&Cell> {
+        self.grid.get(idx)
+    }
+
+    pub fn get_neighbor(&self, idx: Vec2<usize>, dir: CardinalDirection) -> Option<&Cell> {
+        self.grid.get_neighbor(idx, dir)
     }
 
     /// Builds the game map from the given CSVs.
