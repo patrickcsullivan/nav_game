@@ -8,8 +8,8 @@ use super::{
     Sentence,
 };
 
-/// Navigation command where distances in terms of the context of the player's
-/// current pose in the game map.
+/// Navigation command where distances are in terms of landmarks on that map
+/// that are close to the player.s
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum CtxCommand {
     Forward(CtxCommandDistance),
