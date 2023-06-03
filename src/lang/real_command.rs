@@ -1,3 +1,5 @@
+use crate::TurnDirection;
+
 use super::{
     syntax::{
         DistanceNounPhrase, LeftRightTurnPrepPhrase, StreetNounPhrase, TurnDirectionNoun,
@@ -10,22 +12,15 @@ use super::{
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum RealWorldCommand {
     Forward(RealWorldCommandDistance),
-    Rotate(RealWorldCommandRotation),
+    Rotate(TurnDirection),
 }
 
 /// Navigation command to move forward.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[allow(clippy::enum_variant_names)]
 pub enum RealWorldCommandDistance {
-    ThisOrNextStreet(Option<RealWorldCommandRotation>),
-    NthStreet(usize, Option<RealWorldCommandRotation>),
-}
-
-/// Navigation command to rotate.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum RealWorldCommandRotation {
-    Right,
-    Left,
+    ThisOrNextStreet(Option<TurnDirection>),
+    NthStreet(usize, Option<TurnDirection>),
 }
 
 impl From<Sentence> for Vec<RealWorldCommand> {
@@ -79,21 +74,21 @@ impl From<Sentence> for Vec<RealWorldCommand> {
     }
 }
 
-impl From<LeftRightTurnPrepPhrase> for RealWorldCommandRotation {
+impl From<LeftRightTurnPrepPhrase> for TurnDirection {
     fn from(pp: LeftRightTurnPrepPhrase) -> Self {
         let np = pp.0;
         np.into()
     }
 }
 
-impl From<TurnDirectionNounPhrase> for RealWorldCommandRotation {
+impl From<TurnDirectionNounPhrase> for TurnDirection {
     fn from(np: TurnDirectionNounPhrase) -> Self {
         let n = np.0;
         n.into()
     }
 }
 
-impl From<TurnDirectionNoun> for RealWorldCommandRotation {
+impl From<TurnDirectionNoun> for TurnDirection {
     fn from(n: TurnDirectionNoun) -> Self {
         match n {
             TurnDirectionNoun::Izquierda => Self::Left,
@@ -120,7 +115,7 @@ impl From<StreetNounPhrase> for RealWorldCommandDistance {
 }
 
 impl RealWorldCommandDistance {
-    fn from_turnable_np(t_np: TurnableNounPhrase, dir: RealWorldCommandRotation) -> Self {
+    fn from_turnable_np(t_np: TurnableNounPhrase, dir: TurnDirection) -> Self {
         match t_np {
             TurnableNounPhrase::Street(StreetNounPhrase::LaCalle) => {
                 RealWorldCommandDistance::ThisOrNextStreet(Some(dir))

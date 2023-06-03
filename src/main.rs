@@ -1,6 +1,9 @@
+mod direction;
 mod lang;
 mod map;
 mod pose;
+
+use direction::{CardinalDirection, TurnDirection};
 
 use crate::{
     lang::{Lexeme, Sentence},
