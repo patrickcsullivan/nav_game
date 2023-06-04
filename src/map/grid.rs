@@ -68,7 +68,7 @@ impl Grid {
         let x_plus = if x < size.x - 1 { Some(x + 1) } else { None };
         let x = Some(x); // Wrap x in an Option to make it easeier to work with.
 
-        let y = idx.x;
+        let y = idx.y;
         let y_minus = if y > 0 { Some(y - 1) } else { None };
         let y_plus = if y < size.y - 1 { Some(y + 1) } else { None };
         let y = Some(y); // Wrap y in an Option to make it easeier to work with.

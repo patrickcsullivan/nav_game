@@ -32,6 +32,10 @@ impl State {
         }
     }
 
+    pub fn word_bank(&self) -> &Vec<Lexeme> {
+        &self.word_bank
+    }
+
     pub fn set_sentence(&mut self, val: String) {
         self.sentence = val;
     }
@@ -49,6 +53,16 @@ impl State {
         let cmds = self.cmds_from_sentence()?;
         self.pose = self.pose.apply_cmds(&cmds);
         Ok(())
+    }
+}
+
+impl Display for State {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        writeln!(f, "Current sentence: \"{}\"", self.sentence)?;
+        writeln!(f, "Current pose: {}", self.pose)?;
+
+        let cmd_or_err = self.cmds_from_sentence();
+        writeln!(f, "Command state: {:?}", cmd_or_err)
     }
 }
 

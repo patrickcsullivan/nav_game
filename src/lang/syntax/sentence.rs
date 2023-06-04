@@ -43,7 +43,7 @@ pub enum Sentence {
     ContinúaNpNp(ForwardNounPhrase, DistanceNounPhrase),
 
     /// Examples:
-    /// * Continúa todo derecho hasta la primeroa calle.
+    /// * Continúa todo derecho hasta la primera calle.
     /// * Continúa derecho hasta la segunda calle.
     ///
     /// Not supported but should be:

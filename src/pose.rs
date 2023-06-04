@@ -1,10 +1,10 @@
-use vek::Vec2;
-
 use crate::{
     cmd::AbsoluteCommand,
     direction::{CardinalDirection, TurnDirection},
     Map,
 };
+use std::fmt::Display;
+use vek::Vec2;
 
 /// A position and direction in the game world.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -115,5 +115,15 @@ impl Pose {
             position: new_position,
             direction: self.direction,
         }
+    }
+}
+
+impl Display for Pose {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "({}, {}), {}",
+            self.position.x, self.position.y, self.direction
+        )
     }
 }
