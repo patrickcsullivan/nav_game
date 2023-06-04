@@ -19,23 +19,25 @@ fn main() {
     let roads_csv = std::fs::File::open("./example_maps/zonat_25x16_roads.csv").unwrap();
     let buildings_csv = std::fs::File::open("./example_maps/zonat_25x16_buildings.csv").unwrap();
     let map = Map::from_csvs(25, 16, roads_csv, buildings_csv).unwrap();
-    println!("{}", &map);
-
     let init_pose = Pose::new(7, 10, CardinalDirection::South);
     let word_bank = Lexeme::all();
     let goal = BuildingId::new(2); // la hospital
     let mut state = State::new(map, word_bank, init_pose, goal);
+
+    println!("{}", state.map());
     print!("{}", state);
 
     let stdin = io::stdin();
     for line in stdin.lock().lines() {
         let line = line.unwrap();
 
-        if line == *"quit" {
+        if line == *"para" {
             return;
-        } else if line == *"apply" {
+        } else if line == *"el mapa" {
+            println!("{}", state.map());
+        } else if line == *"ve" {
             let _ = state.apply_sentence_cmds();
-        } else if line == *"words" {
+        } else if line == *"las palabras" {
             let mut words = state
                 .word_bank()
                 .iter()

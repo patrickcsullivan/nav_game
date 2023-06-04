@@ -32,6 +32,10 @@ impl State {
         }
     }
 
+    pub fn map(&self) -> &Map {
+        &self.map
+    }
+
     pub fn word_bank(&self) -> &Vec<Lexeme> {
         &self.word_bank
     }
