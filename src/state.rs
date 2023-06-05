@@ -7,6 +7,7 @@ use crate::cmd::{transform_cmds, AbsoluteCommand, CtxCommand, CtxCommandDistance
 use crate::lang::{LexError, Lexeme, Sentence, SentenceParseError};
 use crate::map::{BuildingId, Map};
 use crate::pose::Pose;
+use crate::ui::build_arrow_tiles;
 
 /// The state of the game.
 pub struct State {
@@ -66,7 +67,12 @@ impl Display for State {
         writeln!(f, "Current pose: {}", self.pose)?;
 
         let cmd_or_err = self.cmds_from_sentence();
-        writeln!(f, "Command state: {:?}", cmd_or_err)
+        writeln!(f, "Command state: {:?}", cmd_or_err)?;
+
+        let arrow = cmd_or_err
+            .ok()
+            .map(|cmds| build_arrow_tiles(&self.pose, &cmds));
+        writeln!(f, "Arrow: {:?}", arrow)
     }
 }
 

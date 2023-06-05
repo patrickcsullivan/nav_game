@@ -4,6 +4,7 @@ mod lang;
 mod map;
 mod pose;
 mod state;
+mod ui;
 
 use direction::{CardinalDirection, TurnDirection};
 use iter_tools::Itertools;
