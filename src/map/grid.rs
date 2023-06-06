@@ -121,10 +121,7 @@ pub enum Cell {
 
 impl Cell {
     pub fn is_road(&self) -> bool {
-        match self {
-            Cell::Road(_) => true,
-            _ => false,
-        }
+        matches!(self, Cell::Road(_))
     }
 }
 
@@ -160,5 +157,14 @@ impl<T> Neighbors<T> {
             w: self.w.and_then(&f),
             nw: self.nw.and_then(f),
         }
+    }
+
+    pub fn into_vec(self) -> Vec<T> {
+        vec![
+            self.n, self.ne, self.e, self.se, self.s, self.sw, self.w, self.nw,
+        ]
+        .into_iter()
+        .flatten()
+        .collect_vec()
     }
 }

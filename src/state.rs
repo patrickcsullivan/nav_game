@@ -5,7 +5,7 @@ use thiserror::Error;
 
 use crate::cmd::{transform_cmds, AbsoluteCommand, CtxCommand, CtxCommandDistance};
 use crate::lang::{LexError, Lexeme, Sentence, SentenceParseError};
-use crate::map::{BuildingId, Map};
+use crate::map::{BuildingId, Cell, Map};
 use crate::pose::Pose;
 use crate::ui::build_arrow_tiles;
 
@@ -59,12 +59,25 @@ impl State {
         self.pose = self.pose.apply_cmds(&cmds);
         Ok(())
     }
+
+    pub fn is_winning(&self) -> bool {
+        self.map
+            .get_neighbors(self.pose.position())
+            .into_vec()
+            .into_iter()
+            .any(|c| match c {
+                Cell::Building(b_id) => *b_id == self.goal,
+                _ => false,
+            })
+    }
 }
 
 impl Display for State {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        writeln!(f, "Current sentence: \"{}\"", self.sentence)?;
         writeln!(f, "Current pose: {}", self.pose)?;
+        writeln!(f, "At goal?: {}", self.is_winning())?;
+
+        writeln!(f, "Current sentence: \"{}\"", self.sentence)?;
 
         let cmd_or_err = self.cmds_from_sentence();
         writeln!(f, "Command state: {:?}", cmd_or_err)?;

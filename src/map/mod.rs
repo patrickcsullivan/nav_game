@@ -4,9 +4,9 @@ mod grid;
 mod read;
 mod road;
 
+pub use self::grid::{Cell, Grid, Neighbors};
 pub use building::{Building, BuildingId};
 
-use self::grid::{Cell, Grid};
 use crate::direction::CardinalDirection;
 use read::ReadError;
 use road::{Road, RoadId, RoadOrientation};
@@ -35,6 +35,10 @@ impl Map {
 
     pub fn get(&self, idx: Vec2<usize>) -> Option<&Cell> {
         self.grid.get(idx)
+    }
+
+    pub fn get_neighbors(&self, idx: Vec2<usize>) -> Neighbors<&Cell> {
+        self.grid.get_neighbors(idx)
     }
 
     pub fn get_neighbor(&self, idx: Vec2<usize>, dir: CardinalDirection) -> Option<&Cell> {
