@@ -1,9 +1,4 @@
-use crate::direction::CardinalDirection;
-
-use super::{Building, BuildingId, Road, RoadId, RoadOrientation};
-use grid::Grid as InnerGrid;
-use iter_tools::Itertools;
-use vek::Vec2;
+use super::{BuildingId, RoadId};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Cell {

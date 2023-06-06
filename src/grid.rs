@@ -45,6 +45,22 @@ where
         &self.0
     }
 
+    pub fn map<F, U>(&self, f: F) -> Grid<U>
+    where
+        F: Fn(Vec2<usize>, &T) -> U,
+        U: Default,
+    {
+        let mut new_inner_grid = InnerGrid::new(self.0.rows(), self.0.cols());
+        for (y, row) in self.0.iter_rows().enumerate() {
+            let new_row = row
+                .enumerate()
+                .map(|(x, c)| f(Vec2::new(x, y), c))
+                .collect();
+            new_inner_grid.push_row(new_row);
+        }
+        Grid(new_inner_grid)
+    }
+
     fn neighbor_indices(&self, idx: Vec2<usize>) -> Neighbors<Vec2<usize>> {
         let size = self.size();
 

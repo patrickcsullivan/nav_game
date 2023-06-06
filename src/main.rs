@@ -26,7 +26,7 @@ fn main() {
     let goal = BuildingId::new(2); // la hospital
     let mut state = State::new(map, word_bank, init_pose, goal);
 
-    println!("{}", state.map());
+    state.render_map();
     print!("{}", state);
 
     let stdin = io::stdin();
@@ -36,7 +36,7 @@ fn main() {
         if line == *"para" {
             return;
         } else if line == *"el mapa" {
-            println!("{}", state.map());
+            state.render_map();
         } else if line == *"ve" {
             let _ = state.apply_sentence_cmds();
         } else if line == *"las palabras" {

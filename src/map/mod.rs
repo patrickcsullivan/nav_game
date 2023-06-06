@@ -35,6 +35,10 @@ impl Map {
         self.grid.size()
     }
 
+    pub fn grid(&self) -> &Grid<Cell> {
+        &self.grid
+    }
+
     pub fn get(&self, idx: Vec2<usize>) -> Option<&Cell> {
         self.grid.get(idx)
     }

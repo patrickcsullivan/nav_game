@@ -9,5 +9,6 @@ edition = "2021"
 csv = "1.2.1"
 grid = "0.10.0"
 iter_tools = "0.1.4"
+termcolor = "1.2.0"
 thiserror = "1.0.40"
 vek = { version = "0.10.0", default-features = false, features = ["libm"] }
