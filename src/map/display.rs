@@ -1,6 +1,6 @@
 use iter_tools::Itertools;
 
-use super::{grid::Cell, Map};
+use super::{Cell, Map};
 use std::fmt::Display;
 
 impl Display for Map {
@@ -24,11 +24,7 @@ struct Row<'a>(Vec<&'a Cell>);
 impl<'a> Display for Row<'a> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let cells = &self.0;
-        let s = cells
-            .into_iter()
-            .map(|c| c.to_string())
-            .collect_vec()
-            .join("");
+        let s = cells.iter().map(|c| c.to_string()).collect_vec().join("");
         write!(f, "{}", s)
     }
 }

@@ -1,5 +1,6 @@
 mod cmd;
 mod direction;
+mod grid;
 mod lang;
 mod map;
 mod pose;

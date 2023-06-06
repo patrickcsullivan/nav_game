@@ -1,32 +1,17 @@
 use crate::direction::CardinalDirection;
-
-use super::{Building, BuildingId, Road, RoadId, RoadOrientation};
 use grid::Grid as InnerGrid;
 use iter_tools::Itertools;
 use vek::Vec2;
 
 #[derive(Debug, Clone)]
-pub struct Grid(InnerGrid<Cell>);
+pub struct Grid<T>(InnerGrid<T>);
 
-impl Grid {
+impl<T> Grid<T>
+where
+    T: Default,
+{
     pub fn new(dim: Vec2<usize>) -> Self {
         Grid(InnerGrid::new(dim.y, dim.x))
-    }
-
-    pub fn add_road(&mut self, road: &Road) {
-        for idx in self.road_indices(road) {
-            if let Some(cell) = self.get_mut(idx) {
-                *cell = Cell::Road(road.id());
-            }
-        }
-    }
-
-    pub fn add_building(&mut self, building: &Building) {
-        for idx in self.building_indices(building) {
-            if let Some(cell) = self.get_mut(idx) {
-                *cell = Cell::Building(building.id());
-            }
-        }
     }
 
     pub fn size(&self) -> Vec2<usize> {
@@ -34,19 +19,19 @@ impl Grid {
         Vec2::new(cols, rows)
     }
 
-    pub fn get(&self, idx: Vec2<usize>) -> Option<&Cell> {
+    pub fn get(&self, idx: Vec2<usize>) -> Option<&T> {
         self.0.get(idx.y, idx.x)
     }
 
-    pub fn get_mut(&mut self, idx: Vec2<usize>) -> Option<&mut Cell> {
+    pub fn get_mut(&mut self, idx: Vec2<usize>) -> Option<&mut T> {
         self.0.get_mut(idx.y, idx.x)
     }
 
-    pub fn get_neighbors(&self, idx: Vec2<usize>) -> Neighbors<&Cell> {
+    pub fn get_neighbors(&self, idx: Vec2<usize>) -> Neighbors<&T> {
         self.neighbor_indices(idx).and_then(|idx| self.get(idx))
     }
 
-    pub fn get_neighbor(&self, idx: Vec2<usize>, dir: CardinalDirection) -> Option<&Cell> {
+    pub fn get_neighbor(&self, idx: Vec2<usize>, dir: CardinalDirection) -> Option<&T> {
         let neighbors = self.get_neighbors(idx);
         match dir {
             CardinalDirection::North => neighbors.n,
@@ -56,7 +41,7 @@ impl Grid {
         }
     }
 
-    pub fn inner_grid(&self) -> &InnerGrid<Cell> {
+    pub fn inner_grid(&self) -> &InnerGrid<T> {
         &self.0
     }
 
@@ -83,51 +68,6 @@ impl Grid {
             w: try_vec2(x_minus, y),
             nw: try_vec2(x_minus, y_plus),
         }
-    }
-
-    fn road_indices(&self, road: &Road) -> Vec<Vec2<usize>> {
-        match road.orientation() {
-            RoadOrientation::NorthSouth => (road.origin().y..=road.terminus().y)
-                .map(|y| Vec2::new(road.origin().x, y))
-                .collect_vec(),
-            RoadOrientation::EastWest => (road.origin().x..=road.terminus().x)
-                .map(|x| Vec2::new(x, road.origin().y))
-                .collect_vec(),
-        }
-    }
-
-    fn building_indices(&self, building: &Building) -> Vec<Vec2<usize>> {
-        let min = building.min();
-        let max = building.max();
-
-        (min.x..=max.x)
-            .flat_map(|x| (min.y..=max.y).map(move |y| Vec2::new(x, y)))
-            .collect_vec()
-    }
-}
-
-fn try_vec2<T>(x: Option<T>, y: Option<T>) -> Option<Vec2<T>> {
-    let x = x?;
-    let y = y?;
-    Some(Vec2::new(x, y))
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Cell {
-    Empty,
-    Road(RoadId),
-    Building(BuildingId),
-}
-
-impl Cell {
-    pub fn is_road(&self) -> bool {
-        matches!(self, Cell::Road(_))
-    }
-}
-
-impl Default for Cell {
-    fn default() -> Self {
-        Cell::Empty
     }
 }
 
@@ -167,4 +107,10 @@ impl<T> Neighbors<T> {
         .flatten()
         .collect_vec()
     }
+}
+
+fn try_vec2<T>(x: Option<T>, y: Option<T>) -> Option<Vec2<T>> {
+    let x = x?;
+    let y = y?;
+    Some(Vec2::new(x, y))
 }
